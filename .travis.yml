@@ -1,0 +1,16 @@
+language: php
+php:
+  - 7.0
+
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
+
+install:
+  - composer update
+  - composer run wp-install
+  - composer run wp-empty
+  - composer run wp-db-dump
+
+script:
+  - composer run code-sniff
+  - codecept run tests

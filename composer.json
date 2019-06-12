@@ -1,0 +1,49 @@
+{
+    "name": "moderntribe/tribe-testing-facilities",
+    "description": "Testing facilities, helpers and examples.",
+    "type": "library",
+    "license": "GPL-3.0+",
+    "authors": [
+        {
+            "name": "Modern Tribe",
+            "email": "tribe@tri.be"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Tribe\\Test\\": "src"
+        }
+    },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "wordpress/wordpress",
+                "version": "dev-master",
+                "source": {
+                    "url": "https://github.com/WordPress/WordPress",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
+    "require": {
+		"php": ">=7.0",
+        "lucatume/wp-browser": "^2.0"
+    },
+    "require-dev": {
+        "wp-coding-standards/wpcs": "^2.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+        "wordpress/wordpress": "dev-master",
+        "phpunit/phpunit": "<8.2"
+    },
+    "scripts": {
+        "code-sniff": "vendor/bin/phpcs --standard=./cs-ruleset.xml -s src",
+        "code-fix": "vendor/bin/phpcbf --standard=./cs-ruleset.xml src tests",
+        "wp-install": "bash bin/wp-install.sh",
+        "wp-empty": "bash bin/wp-empty.sh",
+        "wp-db-dump": "bash bin/wp-db-dump.sh",
+        "test": "vendor/bin/codecept run unit && vendor/bin/codecept run wpunit"
+    }
+}
