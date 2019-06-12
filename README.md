@@ -15,9 +15,3 @@ composer require --dev moderntribe/tribe-testing-facilities
 
 ## What's inside?
 Read more [in the documentation](docs/index.md).
-
-### Codeception
-[Codeception](http://codeception.com/ "Codeception - BDD-style PHP testing.") is our testing framework of choice in most cases; along with it [wp-browser](https://github.com/lucatume/wp-browser "lucatume/wp-browser · GitHub") to get some WordPress specific helpers.  
-
-#### Extensions
-* `Tribe\Test\Codeception\Extensions\FunctioMocker` - an extension to wrap [function-mocker](https://github.com/lucatume/function-mocker) initialization in a Codeception-compatible manner.
