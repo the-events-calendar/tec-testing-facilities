@@ -46,6 +46,7 @@
         "wp-db-dump": "bash bin/wp-db-dump.sh",
         "wp-server-start": "bash bin/wp-server-start.sh",
         "wp-server-stop": "bash bin/wp-server-stop.sh",
+        "php-logs": "bash bin/php-logs.sh",
         "test": "vendor/bin/codecept run unit && vendor/bin/codecept run wpunit"
     }
 }
