@@ -15,7 +15,7 @@ class Function_MockerTest extends \Codeception\Test\Unit {
 		$options = [];
 		$event   = $this->prophesize( SuiteEvent::class );
 
-		$extension = new FunctionMocker( $config, $options );
+		$extension = new Function_Mocker( $config, $options );
 
 		$this->expectException( ExtensionException::class );
 
@@ -32,7 +32,7 @@ class Function_MockerTest extends \Codeception\Test\Unit {
 		$options = [];
 		$event   = $this->prophesize( SuiteEvent::class );
 
-		$extension = new FunctionMocker( $config, $options );
+		$extension = new Function_Mocker( $config, $options );
 
 		$this->expectException( ExtensionException::class );
 
@@ -57,7 +57,7 @@ class Function_MockerTest extends \Codeception\Test\Unit {
 		$suite_one->getName()->willReturn( 'suite_one' );
 		$event_one->getSuite()->willReturn( $suite_one->reveal() );
 
-		$extension = new FunctionMocker( $config, $options );
+		$extension = new Function_Mocker( $config, $options );
 
 		$extension->init( $event_one->reveal() );
 
@@ -88,7 +88,7 @@ class Function_MockerTest extends \Codeception\Test\Unit {
 		$suite_one->getName()->willReturn( 'suite_one' );
 		$event_one->getSuite()->willReturn( $suite_one->reveal() );
 
-		$extension = new FunctionMocker( $config, $options );
+		$extension = new Function_Mocker( $config, $options );
 
 		$extension->init( $event_one->reveal() );
 
