@@ -1,6 +1,6 @@
 # Modern Tribe testing facilities
 
-A set of testing helpers, add-ons and gimmicks to make Modern Tribe Products and Agency testing easier.
+A set of testing helpers, add-ons and gimmicks to make Modern Tribe Products and Agency testing easier.  
 
 ## Requirements
 The library requires PHP 7.0 or above.  
@@ -12,12 +12,12 @@ Since this package is not on Packagist you'll need to define the package in your
 
 ```json
 "repositories": [
-{
-  "name": "moderntribe/tribe-testing-facilities",
-  "type": "github",
-  "url": "https://github.com/moderntribe/tribe-testing-facilities",
-  "no-api": true
-}
+		{
+		  "name": "moderntribe/tribe-testing-facilities",
+		  "type": "github",
+		  "url": "https://github.com/moderntribe/tribe-testing-facilities",
+		  "no-api": true
+		}
 ],
 ```
 
@@ -28,4 +28,4 @@ composer require --dev moderntribe/tribe-testing-facilities:dev-master
 ```
 
 ## What's inside?
-Read more [in the documentation](docs/index.md).
+Read more [in the documentation](docs/README.md).
