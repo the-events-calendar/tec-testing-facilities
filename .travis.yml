@@ -13,4 +13,4 @@ install:
 
 script:
   - composer run code-sniff
-  - codecept run tests
+  - composer run test
