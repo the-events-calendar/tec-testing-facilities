@@ -12,6 +12,7 @@ Here's a list of what's included in the library.
     * [wp-server-stop](Composer/Scripts.md#wp-server-stop)
     * [php-logs](Composer/Scripts.md#php-logs)
     * [test](Composer/Scripts.md#test)
+* [Running WordPress with the PHP built-in server](Composer/Running_WordPress.md)
 * Codeception
     * Extensions
         * [Function Mocker](Codeception/Extensions/Function_Mocker.md)
