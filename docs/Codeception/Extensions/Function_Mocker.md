@@ -8,9 +8,9 @@ Add a the extension configuration in your main Codeception file (`codeception.di
 ```yaml
 extensions:
     enabled:
-        - Tribe\Events\Test\Extensions\FunctionMocker
+        - Tribe\Test\Codeception\Extensions\Function_Mocker
     config:
-        Tribe\Events\Test\Extensions\FunctionMocker:
+        Tribe\Test\Codeception\Extensions\Function_Mocker:
             suites: [ 'wpunit' ]
             initFile: tests/_function-mocker-bootstrap.php
 ```
