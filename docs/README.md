@@ -16,3 +16,10 @@ Here's a list of what's included in the library.
 * Codeception
     * Extensions
         * [Function Mocker](Codeception/Extensions/Function_Mocker.md)
+* Products
+    * WPBrowser
+        * Views
+            * V2 - a set of test cases and utils to support integration, or "WordPress unit", testing of Views v2
+* PHPUnit
+    * Traits
+        * [With_Post_Remapping](PHPUnit/Traits/With_Post_Remapping.md)
