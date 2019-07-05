@@ -151,7 +151,7 @@ trait With_Post_Remapping {
 	 *
 	 * @return array|false Either the target array or `false` if the identifier could not be found.
 	 */
-	private function get_remap_target( $target ) {
+	protected function get_remap_target( $target ) {
 		$file     = $this->get_remap_target_file( $target );
 		$contents = file_get_contents( $file );
 		$decoded  = json_decode( $contents, true );
