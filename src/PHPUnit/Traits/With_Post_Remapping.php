@@ -79,9 +79,9 @@ trait With_Post_Remapping {
 	 */
 	private function check_remap_posts( array $posts ) {
 		foreach ( $posts as $post ) {
-			if ( ! $post instanceof \WP_Post || is_numeric( $post ) ) {
+			if ( ! ( $post instanceof \WP_Post || is_numeric( $post ) ) ) {
 				throw new \InvalidArgumentException(
-					'Each post to remap should be WP_Post instance or a post ID; one is not: ' .
+					'Each post to remap should be a WP_Post instance or a post ID; one is not: ' .
 					json_encode( $post, JSON_PRETTY_PRINT )
 				);
 			}
