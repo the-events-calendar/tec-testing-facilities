@@ -17,6 +17,8 @@ Here's a list of what's included in the library.
     * Extensions
         * [Function Mocker](Codeception/Extensions/Function_Mocker.md)
 * Products
+    * Traits
+        * `With_Event_Data_Fetching`a - provides methods to fetch event information directly from the database.
     * WPBrowser
         * Views
             * V2 - a set of test cases and utils to support integration, or "WordPress unit", testing of Views v2
