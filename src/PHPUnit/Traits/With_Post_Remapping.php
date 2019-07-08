@@ -34,7 +34,7 @@ trait With_Post_Remapping {
 				: (int) $post;
 			$remap_target = $this->get_remap_target( $target );
 
-			$meta_input = $tax_input = false;
+			$meta_input = false;
 
 			if ( isset( $remap_target['meta_input'] ) ) {
 				$meta_input = $remap_target['meta_input'];
@@ -61,6 +61,8 @@ trait With_Post_Remapping {
 	 *
 	 * @param array $actual  The posts to remap.
 	 * @param array $targets The targets to remap the posts to.
+	 *
+	 * @throws \InvalidArgumentException If the number of targets and posts is not the same.
 	 */
 	private function check_remap_counts( array $actual, array $targets ) {
 		$actual_count = count( $actual );
@@ -76,6 +78,8 @@ trait With_Post_Remapping {
 	 * Checks all the posts to remap are either post objects or post IDs.
 	 *
 	 * @param array $posts The array of posts to check.
+	 *
+	 * @throws \InvalidArgumentException If one post is not a post ID or post object.
 	 */
 	private function check_remap_posts( array $posts ) {
 		foreach ( $posts as $post ) {
@@ -92,6 +96,8 @@ trait With_Post_Remapping {
 	 * Checks each target is valid.
 	 *
 	 * @param array $targets An array of targets to check.
+	 *
+	 * @throws \InvalidArgumentException If the target JSON is not valid.
 	 */
 	private function check_remap_targets( array $targets ) {
 		$remapped_ids = [];
@@ -156,6 +162,6 @@ trait With_Post_Remapping {
 		$contents = file_get_contents( $file );
 		$decoded  = json_decode( $contents, true );
 
-		return (array)$decoded;
+		return (array) $decoded;
 	}
 }

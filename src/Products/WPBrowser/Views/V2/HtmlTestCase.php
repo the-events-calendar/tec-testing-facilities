@@ -22,12 +22,14 @@ use Tribe\Events\Views\V2\View_Interface;
 abstract class HtmlTestCase extends TestCase {
 	/**
 	 * Store the views loader
+	 *
 	 * @var Template
 	 */
 	protected $template;
 
 	/**
 	 * Store the DOM handler
+	 *
 	 * @var Document
 	 */
 	protected $document;
@@ -39,6 +41,9 @@ abstract class HtmlTestCase extends TestCase {
 	 */
 	protected $view;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function setUp() {
 		parent::setUp();
 

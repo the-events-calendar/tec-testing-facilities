@@ -9,6 +9,7 @@ namespace Tribe\Test\Products\Traits;
 
 /**
  * Class With_Event_Data_Fetching
+ *
  * @package Tribe\Test\Products\Traits
  */
 trait With_Event_Data_Fetching {
@@ -24,17 +25,23 @@ trait With_Event_Data_Fetching {
 	 *                                      fetch only specific meta values.
 	 *
 	 * @return array An array in the shape `[<post_id> => ['_EventStartDate' => <date>, ...]]`.
+	 *
+	 * @throws \InvalidArgumentException If the specified meta key is not supported;.
 	 */
 	protected function fetch_event_dates_from_db( array $post_ids, $meta_key = false ) {
 		global $wpdb;
 		$ids = implode( ',', array_map( 'absint', $post_ids ) );
 
-		$results = $wpdb->get_results( "select post_id, meta_key, meta_value 
+		// phpcs:disable
+		$results = $wpdb->get_results(
+			"select post_id, meta_key, meta_value 
 				from {$wpdb->postmeta} 
 				where post_id in ({$ids}) 
 			  	and meta_key regexp '^_Event(Start|End)Date(UTC)*$'
-			  	order by field (post_id, {$ids})"
-			, ARRAY_A );
+			  	order by field (post_id, {$ids})",
+			ARRAY_A
+		);
+		// phpcs:enable
 
 		$whitelist = [ '_EventStartDate', '_EventStartDateUTC', '_EventEndDate', '_EventEndDateUTC' ];
 
@@ -48,15 +55,18 @@ trait With_Event_Data_Fetching {
 			$whitelist = array_intersect( $whitelist, $meta_keys );
 		}
 
+		$dates = array_reduce(
+			$results,
+			static function ( array $acc, array $result ) use ( $whitelist ) {
+				if ( ! in_array( $result['meta_key'], $whitelist, true ) ) {
+					return $acc;
+				}
+				$acc[ $result['post_id'] ][ $result['meta_key'] ] = $result['meta_value'];
 
-		$dates = array_reduce( $results, static function ( array $acc, array $result ) use ( $whitelist ) {
-			if ( ! in_array( $result['meta_key'], $whitelist, true ) ) {
 				return $acc;
-			}
-			$acc[ $result['post_id'] ][ $result['meta_key'] ] = $result['meta_value'];
-
-			return $acc;
-		}, [] );
+			},
+			[]
+		);
 
 		return $dates;
 	}
