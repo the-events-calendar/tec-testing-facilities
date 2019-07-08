@@ -10,10 +10,12 @@ namespace Tribe\Test\Products\WPBrowser\Views\V2;
 
 use tad\FunctionMocker\FunctionMocker as Test;
 use Tribe\Test\PHPUnit\Traits\With_Post_Remapping;
+use Tribe\Test\Products\Traits\With_Event_Data_Fetching;
 
 class ViewTestCase extends TestCase {
 
 	use With_Post_Remapping;
+	use With_Event_Data_Fetching;
 
 	/**
 	 * In the `reset_post_dates` methods all date-related post fields will be set to this value.
@@ -36,8 +38,10 @@ class ViewTestCase extends TestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
+
 		// Start Function Mocker.
 		Test::setUp();
+
 		// Mock calls to the date function to return a fixed value when getting the current date.
 		Test::replace( 'date', function ( $format, $date = null ) {
 			$date = $date ?? $this->mock_date_value;
@@ -50,8 +54,16 @@ class ViewTestCase extends TestCase {
 
 			return $date_time->format( $format );
 		} );
+
 		// Always return the same value when creating nonces.
 		Test::replace( 'wp_create_nonce', '2ab7cc6b39' );
+
+		// Let's make sure we can create as many recurring events as we want.
+		$return_int_max = static function () {
+			return PHP_INT_MAX;
+		};
+		add_filter( 'tribe_events_pro_recurrence_small_batch_size', $return_int_max );
+		add_filter( 'tribe_events_pro_recurrence_batch_size', $return_int_max );
 	}
 
 	/**
