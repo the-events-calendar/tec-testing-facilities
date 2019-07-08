@@ -10,10 +10,17 @@ namespace Tribe\Test\Products\WPBrowser\Views\V2;
 
 use tad\FunctionMocker\FunctionMocker as Test;
 use Tribe\Test\PHPUnit\Traits\With_Post_Remapping;
+use Tribe\Test\Products\Traits\With_Event_Data_Fetching;
 
+/**
+ * Class ViewTestCase
+ *
+ * @package Tribe\Test\Products\WPBrowser\Views\V2
+ */
 class ViewTestCase extends TestCase {
 
 	use With_Post_Remapping;
+	use With_Event_Data_Fetching;
 
 	/**
 	 * In the `reset_post_dates` methods all date-related post fields will be set to this value.
@@ -36,15 +43,35 @@ class ViewTestCase extends TestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
+
 		// Start Function Mocker.
 		Test::setUp();
-		// Mock calls to the date function to return a fixed value.
-		Test::replace( 'date', function ( $format ) {
-			return ( new \DateTime( $this->mock_date_value, new \DateTimeZone( 'UTC' ) ) )
-				->format( $format );
-		} );
+
+		// Mock calls to the date function to return a fixed value when getting the current date.
+		Test::replace(
+			'date',
+			function ( $format, $date = null ) {
+				$date = $date ?? $this->mock_date_value;
+
+				if ( \Tribe__Date_Utils::is_timestamp( $date ) ) {
+					$date = '@' . $date;
+				}
+
+				$date_time = new \DateTime( $date, new \DateTimeZone( 'UTC' ) );
+
+				return $date_time->format( $format );
+			}
+		);
+
 		// Always return the same value when creating nonces.
 		Test::replace( 'wp_create_nonce', '2ab7cc6b39' );
+
+		// Let's make sure we can create as many recurring events as we want.
+		$return_int_max = static function () {
+			return PHP_INT_MAX;
+		};
+		add_filter( 'tribe_events_pro_recurrence_small_batch_size', $return_int_max );
+		add_filter( 'tribe_events_pro_recurrence_batch_size', $return_int_max );
 	}
 
 	/**
@@ -77,11 +104,11 @@ class ViewTestCase extends TestCase {
 	/**
 	 * Sets the date/time-dependant fields of an array of posts to a fixed value.
 	 *
-	 * @param \WP_Post[] $post The post opbjects to modify.
+	 * @param array $posts An array of `\WP_Posts` to reset the dates for.
 	 *
-	 * @return \WP_Post[] The modified posts object.
+	 * @return array The modified posts object.
 	 */
-	public function reset_posts_dates( $posts ) {
+	public function reset_posts_dates( array $posts ) {
 		if ( empty( $posts ) || ! is_array( $posts ) ) {
 			return $posts;
 		}

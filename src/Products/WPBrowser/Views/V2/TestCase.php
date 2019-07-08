@@ -85,11 +85,16 @@ abstract class TestCase extends WPTestCase {
 		/*
 		 * Filter the `home_url` to make sure URLs printed on the page are consistent across environments.
 		 */
-		add_filter( 'home_url', static function( $url, $path = null ) {
-			return 'http://test.tri.be/' . ltrim( $path, '/' );
-		}, 10, 2 );
+		add_filter(
+			'home_url',
+			static function( $url, $path = null ) {
+				return 'http://test.tri.be/' . ltrim( $path, '/' );
+			},
+			10,
+			2
+		);
 
-		// Setup a new HTML output driver to make sure our stuff is tolerable
+		// Setup a new HTML output driver to make sure our stuff is tolerable.
 		$this->driver = new WPHtmlOutputDriver( home_url(), 'http://views.dev' );
 		$this->driver->setTimeDependentKeys( [ 'tribe-events-views[_wpnonce]' ] );
 

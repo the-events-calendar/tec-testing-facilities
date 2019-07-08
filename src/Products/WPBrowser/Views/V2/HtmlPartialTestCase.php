@@ -14,6 +14,11 @@ use Tribe\Events\Views\V2\Template;
 use Tribe\Events\Views\V2\View;
 use Tribe\Events\Views\V2\Views\Reflector_View;
 
+/**
+ * Class HtmlPartialTestCase
+ *
+ * @package Tribe\Test\Products\WPBrowser\Views\V2
+ */
 class HtmlPartialTestCase extends WPTestCase {
 	use MatchesSnapshots;
 
@@ -33,7 +38,9 @@ class HtmlPartialTestCase extends WPTestCase {
 	protected $template;
 
 	/**
-	 * Sets up the partial test case checking and refreshing its properties.
+	 * {@inheritDoc}
+	 *
+	 * @throws \RuntimeException If the extending test case is not defining a `$partial_path` property.
 	 */
 	public function setUp() {
 		parent::setUp();

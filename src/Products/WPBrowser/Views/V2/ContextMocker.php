@@ -75,12 +75,13 @@ class ContextMocker {
 	 *                     the View class fully-qualified name.
 	 *
 	 * @return ContextMocker The mocker instance to allow for method chaining.
+	 * @throws \RuntimeException If the view is not registered among the available Views.
 	 */
 	public function for_view( string $view ): ContextMocker {
 		if ( class_exists( $view ) ) {
 			$view_slug = class_exists( $view ) ? tribe( Manager::class )->get_view_slug_by_class( $view ) : $view;
 			if ( false === $view_slug ) {
-				$message = "Currently no View is registered for the '{$view}' slug;";
+				$message  = "Currently no View is registered for the '{$view}' slug;";
 				$message .= "\n\tDid you register the View in the `tribe_events_views` filter?";
 				throw new \RuntimeException( $message );
 			}
