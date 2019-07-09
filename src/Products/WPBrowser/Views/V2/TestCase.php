@@ -12,6 +12,7 @@ namespace Tribe\Test\Products\WPBrowser\Views\V2;
 use Codeception\TestCase\WPTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use tad\WP\Snapshots\WPHtmlOutputDriver;
+use Tribe\Events\Views\V2\View_Interface;
 use Tribe__Context as Context;
 
 /**
@@ -105,7 +106,7 @@ abstract class TestCase extends WPTestCase {
 	/**
 	 * Starts the chain to replace the global context using the Context Mocker.
 	 *
-	 * @return \Tribe\Events\Views\V2\ContextMocker The context mocker instance.
+	 * @return ContextMocker The context mocker instance.
 	 */
 	protected function given_a_main_query_request(): ContextMocker {
 		$context_mocker = new ContextMocker();
@@ -118,7 +119,7 @@ abstract class TestCase extends WPTestCase {
 	/**
 	 * Asserts a view current HTML output matches a stored HTML snapshot.
 	 *
-	 * @param \Tribe\Events\Views\V2\View_Interface $view The view instance.
+	 * @param View_Interface $view The view instance.
 	 */
 	protected function assert_view_snapshot( View_Interface $view ) {
 		if ( null !== $this->context_mocker && ! $this->context_mocker->did_mock() ) {
