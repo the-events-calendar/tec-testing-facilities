@@ -47,21 +47,24 @@ class ViewTestCase extends TestCase {
 		// Start Function Mocker.
 		Test::setUp();
 
-		// Mock calls to the date function to return a fixed value when getting the current date.
-		Test::replace(
-			'date',
-			function ( $format, $date = null ) {
-				$date = $date ?? $this->mock_date_value;
+		// Mock calls to the `date` function to return a fixed value when getting the current date.
+		Test::replace( 'date', function ( $format, $date = null ) {
+			$date = $date ?? $this->mock_date_value;
 
-				if ( \Tribe__Date_Utils::is_timestamp( $date ) ) {
-					$date = '@' . $date;
-				}
-
-				$date_time = new \DateTime( $date, new \DateTimeZone( 'UTC' ) );
-
-				return $date_time->format( $format );
+			if ( \Tribe__Date_Utils::is_timestamp( $date ) ) {
+				$date = '@' . $date;
 			}
+
+			$date_time = new \DateTime( $date, new \DateTimeZone( 'UTC' ) );
+
+			return $date_time->format( $format );
+		}
 		);
+
+		// Mock calls to the `time` function too to make sure "now" timestamp is a controlled value.
+		Test::replace( 'time', function () {
+			return ( new \DateTime( $this->mock_date_value, new \DateTimeZone( 'UTC' ) ) )->getTimestamp();
+		} );
 
 		// Always return the same value when creating nonces.
 		Test::replace( 'wp_create_nonce', '2ab7cc6b39' );
