@@ -64,9 +64,8 @@ abstract class TestCase extends WPTestCase {
 			),
 			$reset_values
 		);
-		// Make sure the reset was successful.
+		// Reset to the values.
 		tribe_context()->alter( $reset_values )->dangerously_set_global_context();
-		$this->assertEqualSets( $this->global_context_before_test, tribe_context()->to_array() );
 
 		parent::tearDown();
 	}
