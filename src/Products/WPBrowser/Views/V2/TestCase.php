@@ -12,6 +12,9 @@ namespace Tribe\Test\Products\WPBrowser\Views\V2;
 use Codeception\TestCase\WPTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use tad\WP\Snapshots\WPHtmlOutputDriver;
+use Tribe\Events\Test\Factories\Event;
+use Tribe\Events\Test\Factories\Organizer;
+use Tribe\Events\Test\Factories\Venue;
 use Tribe\Events\Views\V2\View_Interface;
 use Tribe__Context as Context;
 
@@ -100,6 +103,14 @@ abstract class TestCase extends WPTestCase {
 
 		// Let's make sure there are no left-over events between tests.
 		tribe_events()->delete();
+
+		/*
+		 * Set up the event, venue and organizer factories to make them available in the tests on the `static::factory`
+		 * method.
+		 */
+		static::factory()->event     = new Event();
+		static::factory()->venue     = new Venue();
+		static::factory()->organizer = new Organizer();
 	}
 
 	/**

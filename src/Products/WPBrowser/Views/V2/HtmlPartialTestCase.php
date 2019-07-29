@@ -54,6 +54,17 @@ class HtmlPartialTestCase extends WPTestCase {
 
 		$view           = View::make( Reflector_View::class );
 		$this->template = new Template( $view );
+
+		/*
+		 * To make sure we're not breaking snapshots by a change in the local URL generating them change the `home_url`
+		 * to a fixed value.
+		 */
+		add_filter(
+			'option_home',
+			static function () {
+				return 'http://test.tri.be';
+			}
+		);
 	}
 
 	/**
