@@ -49,6 +49,7 @@ abstract class HtmlTestCase extends TestCase {
 
 		$this->view     = $this->make_view_instance();
 		$this->template = $this->make_template_instance();
+		$this->template->set_values( $this->view->get_template_vars(),false);
 		$this->document = $this->make_document_instance();
 	}
 
