@@ -4,3 +4,4 @@ codeception.yml
 tests/*.suite.yml
 .php-server-pid
 phpd.log
+.idea
