@@ -119,5 +119,29 @@ class ViewTestCase extends TestCase {
 
 		return $posts;
 	}
+
+	/**
+	 * Alters the global context and returns a version of it mocking date and time dependent values.
+	 *
+	 * By default the context will be altered to set the `posts_per_page` to 20, and `today`, `now` and `event_date` to
+	 * the test case `mock_date_value` property value.
+	 *
+	 * @param array $overrides An associative array of overrides that should be used to alter the context.
+	 *
+	 * @return \Tribe__Context An altered clone of the global context.
+	 */
+	protected function get_mock_context( array $overrides = [] ): \Tribe__Context {
+		return tribe_context()->alter(
+			wp_parse_args(
+				$overrides,
+				[
+					'today'          => $this->mock_date_value,
+					'now'            => $this->mock_date_value,
+					'event_date'     => $this->mock_date_value,
+					'posts_per_page' => 20,
+				]
+			)
+		);
+	}
 }
 
