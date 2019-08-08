@@ -69,7 +69,9 @@ abstract class HtmlTestCase extends TestCase {
 	 */
 	protected function make_template_instance() {
 		$template = new Template( $this->view );
+
 		$template->set_values( $this->view->get_context()->to_array(), false );
+		$template->set_values( $this->view->get_template_vars(), false );
 
 		return $template;
 	}
