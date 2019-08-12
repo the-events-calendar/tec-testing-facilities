@@ -56,7 +56,7 @@ abstract class TestCase extends WPTestCase {
 	 */
 	public function tearDown() {
 		// Get the values we had before the test method.
-		$reset_values = $this->global_context_before_test;
+		$reset_values = (array) $this->global_context_before_test;
 		// Get the values we have now.
 		$locations = tribe_context()->get_locations();
 		// Reset any value we had before to its previous value, set any other value to `NOT_FOUND`.
