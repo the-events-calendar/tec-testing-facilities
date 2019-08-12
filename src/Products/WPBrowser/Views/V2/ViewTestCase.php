@@ -142,6 +142,8 @@ class ViewTestCase extends TestCase {
 				[
 					'today'          => $this->mock_date_value,
 					'now'            => $this->mock_date_value,
+					// Set the default start of week to Sunday, Saturday is `6`.
+					'start_of_week'  => 0, 
 					'event_date'     => $this->mock_date_value,
 					'posts_per_page' => 20,
 				]
