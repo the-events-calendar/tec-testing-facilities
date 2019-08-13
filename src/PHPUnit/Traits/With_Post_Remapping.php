@@ -19,6 +19,8 @@ trait With_Post_Remapping {
 	 *
 	 * @param array $posts   The posts to remap in the cache.
 	 * @param array $targets The targets to remap the posts to.
+	 *
+	 * @return array An array of the remappings in the shape `[ <original_id> => <remapped_id> ]`.
 	 */
 	protected function remap_posts( array $posts, array $targets ) {
 		$this->check_remap_counts( $posts, $targets );
@@ -28,6 +30,9 @@ trait With_Post_Remapping {
 		$iterator = new \MultipleIterator();
 		$iterator->attachIterator( new \ArrayIterator( $posts ) );
 		$iterator->attachIterator( new \ArrayIterator( $targets ) );
+
+		$remap_map = [];
+
 		foreach ( $iterator as list( $post, $target ) ) {
 			$post_id      = $post instanceof \WP_Post
 				? $post->ID
@@ -41,7 +46,8 @@ trait With_Post_Remapping {
 				unset( $remap_target['meta_input'] );
 			}
 
-			$remap_id = $remap_target['ID'];
+			$remap_id              = $remap_target['ID'];
+			$remap_map[ $post_id ] = $remap_id;
 
 			// The same data will be returned fetching the original or remapped post.
 			wp_cache_set( $post_id, (object) $remap_target, 'posts' );
@@ -54,6 +60,8 @@ trait With_Post_Remapping {
 
 			// @todo support tax_input.
 		}
+
+		return $remap_map;
 	}
 
 	/**
@@ -163,5 +171,31 @@ trait With_Post_Remapping {
 		$decoded  = json_decode( $contents, true );
 
 		return (array) $decoded;
+	}
+
+	/**
+	 * Replaces the IDs of remapped posts with their remapped counterpart id.
+	 *
+	 * E.g. if the post with ID `23` had been remapped to the post with ID `89` then:
+	 *  $remapped = $this->remap_post_id_array( [ 23, 24, 25 ], [ 23 => 89 ]);
+	 *  assert( $remapped === [ 89, 24, 25 ] );
+	 *
+	 * @since TBD
+	 *
+	 * @param array $original The array to replace post IDs into.
+	 * @param array $remap_map The map that should be used for the replacements, usually result of the `remap_posts`
+	 *                         method.
+	 *
+	 * @return array The original array, each remapped post ID replace with its remap counterpart.
+	 *
+	 * @see With_Post_Remapping::remap_posts() for the format of the remap map.
+	 */
+	protected function remap_post_id_array( array $original, array $remap_map ) {
+		$remapped = $original;
+		foreach ( $remapped as &$post_id ) {
+			$post_id = array_key_exists( $post_id, $remap_map ) ? $remap_map[ $post_id ] : $post_id;
+		}
+
+		return $remapped;
 	}
 }
