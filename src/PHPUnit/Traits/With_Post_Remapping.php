@@ -16,6 +16,8 @@ trait With_Post_Remapping {
 
 	/**
 	 * An array containing the content dynamically generated from templates.
+	 *
+	 * @var array
 	 */
 	protected $dynamic_content = [];
 
@@ -182,7 +184,7 @@ trait With_Post_Remapping {
 			$contents = file_get_contents( $file );
 		}
 
-		$decoded  = json_decode( $contents, true );
+		$decoded = json_decode( $contents, true );
 
 		return (array) $decoded;
 	}
@@ -218,8 +220,8 @@ trait With_Post_Remapping {
 	 *
 	 * @since TBD
 	 *
-	 * @param           string $target The path, relative to the the plugin `tests/_data/remap` directory, to the static
-	 *                                 JSON file or JSON file template.
+	 * @param           string     $target The path, relative to the the plugin `tests/_data/remap` directory, to the static
+	 *                                     JSON file or JSON file template.
 	 * @param array|null $template_vars If specified the content of the specified JSON file target will be used as a
 	 *                                  template, its values filled to those specified in the template variables.
 	 *                                  Variables will be replaced to their `{{ <key> }}` counterpart in the template.
