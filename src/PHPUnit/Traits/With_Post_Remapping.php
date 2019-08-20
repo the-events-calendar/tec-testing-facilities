@@ -15,6 +15,11 @@ namespace Tribe\Test\PHPUnit\Traits;
 trait With_Post_Remapping {
 
 	/**
+	 * An array containing the content dynamically generated from templates.
+	 */
+	protected $dynamic_content = [];
+
+	/**
 	 * Remaps, pre-filling the cache, some posts to some fake targets.
 	 *
 	 * @param array $posts   The posts to remap in the cache.
@@ -117,6 +122,10 @@ trait With_Post_Remapping {
 				);
 			}
 
+			if ( isset( $this->dynamic_content[ $target ] ) ) {
+				return;
+			}
+
 			$file = $this->get_remap_target_file( $target );
 
 			if ( ! file_exists( $file ) ) {
@@ -166,8 +175,13 @@ trait With_Post_Remapping {
 	 * @return array|false Either the target array or `false` if the identifier could not be found.
 	 */
 	protected function get_remap_target( $target ) {
-		$file     = $this->get_remap_target_file( $target );
-		$contents = file_get_contents( $file );
+		if ( isset( $this->dynamic_content[ $target ] ) ) {
+			$contents = $this->dynamic_content[ $target ];
+		} else {
+			$file     = $this->get_remap_target_file( $target );
+			$contents = file_get_contents( $file );
+		}
+
 		$decoded  = json_decode( $contents, true );
 
 		return (array) $decoded;
@@ -197,5 +211,48 @@ trait With_Post_Remapping {
 		}
 
 		return $remapped;
+	}
+
+	/**
+	 * Creates and returns an event post, remapping it to either a static JSON remap file or to a dynamic template file.
+	 *
+	 * @since TBD
+	 *
+	 * @param           string $target The path, relative to the the plugin `tests/_data/remap` directory, to the static
+	 *                                 JSON file or JSON file template.
+	 * @param array|null $template_vars If specified the content of the specified JSON file target will be used as a
+	 *                                  template, its values filled to those specified in the template variables.
+	 *                                  Variables will be replaced to their `{{ <key> }}` counterpart in the template.
+	 *
+	 * @return \WP_Post An event post object, decorated with additional properties attached by the `tribe_get_event`
+	 *                  function.
+	 *
+	 * @see tribe_get_event() for more details about the attached properties.
+	 */
+	protected function get_mock_event( $target, array $template_vars = null ) {
+		if ( null !== $template_vars ) {
+			// If an array of template variables is specified, then we assume the target should be used as a template.
+			$file                           = $this->get_remap_target_file( $target );
+			$contents                       = file_get_contents( $file );
+			$contents                       = str_replace(
+				array_map(
+					static function ( $key ) {
+						return '{{ ' . $key . ' }}';
+					},
+					array_keys( $template_vars )
+				),
+				$template_vars,
+				$contents
+			);
+			$hash                           = md5( json_encode( func_get_args() ) );
+			$this->dynamic_content[ $hash ] = $contents;
+			$target                         = $hash;
+		}
+
+		$post_id     = static::factory()->post->create();
+		$remap       = $this->remap_posts( [ $post_id ], [ $target ] );
+		$remapped_id = reset( $remap );
+
+		return tribe_get_event( $remapped_id );
 	}
 }
