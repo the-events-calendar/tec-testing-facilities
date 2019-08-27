@@ -28,11 +28,11 @@ trait With_Filter_Manipulation {
 	 */
 	protected function suspending_filter_do( $filter, callable $callback ) {
 		global $wp_filter;
-		$shutdown_backup      = $wp_filter[ $filter ];
+		$filter_backup        = $wp_filter[ $filter ];
 		$wp_filter[ $filter ] = new \WP_Hook();
 
 		$callback();
 
-		$wp_filter[ $filter ] = $shutdown_backup;
+		$wp_filter[ $filter ] = $filter_backup;
 	}
 }
