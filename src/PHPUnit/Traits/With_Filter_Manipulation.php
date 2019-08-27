@@ -7,7 +7,6 @@
  * @package Tribe\Test\PHPUnit\Traits
  */
 
-
 namespace Tribe\Test\PHPUnit\Traits;
 
 /**
