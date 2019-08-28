@@ -25,3 +25,4 @@ Here's a list of what's included in the library.
 * PHPUnit
     * Traits
         * [With_Post_Remapping](PHPUnit/Traits/With_Post_Remapping.md)
+        * [With_Filter_Manipulation](PHPUnit/Traits/With_Filter_Manipulation.md)
