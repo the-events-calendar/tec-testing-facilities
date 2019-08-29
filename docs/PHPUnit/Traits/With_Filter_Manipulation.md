@@ -3,8 +3,7 @@
 Manipulate WordPress filters, and actions, in test casees.
 
 ## Requirements
-The trait uses WordPress functions and systems, WordPress should be loaded in the context of the test to use this trait 
-successfully.
+The trait uses WordPress functions and systems, WordPress should be loaded in the context of the test to use this trait successfully.
 
 ## Usage
 
