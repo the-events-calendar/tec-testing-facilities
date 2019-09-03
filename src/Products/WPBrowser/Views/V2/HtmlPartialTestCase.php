@@ -59,8 +59,7 @@ class HtmlPartialTestCase extends WPTestCase {
 		 * To make sure we're not breaking snapshots by a change in the local URL generating them change the `home_url`
 		 * to a fixed value.
 		 */
-		$mock_url = static function ()
-		{
+		$mock_url = static function () {
 			return 'http://test.tri.be';
 		};
 		add_filter( 'option_home', $mock_url );
