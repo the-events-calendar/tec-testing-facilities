@@ -64,7 +64,6 @@ class HtmlPartialTestCase extends WPTestCase {
 		};
 		add_filter( 'option_home', $mock_url );
 		add_filter( 'option_siteurl', $mock_url );
-		add_filter( 'home_url', $mock_url );
 	}
 
 	/**
