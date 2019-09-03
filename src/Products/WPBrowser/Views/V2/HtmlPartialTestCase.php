@@ -55,16 +55,31 @@ class HtmlPartialTestCase extends WPTestCase {
 		$view           = View::make( Reflector_View::class );
 		$this->template = new Template( $view );
 
+		$home_url = home_url();
+
 		/*
 		 * To make sure we're not breaking snapshots by a change in the local URL generating them change the `home_url`
 		 * to a fixed value.
 		 */
+		$mock_url = static function () {
+			return 'http://test.tri.be';
+		};
+		add_filter( 'option_home', $mock_url );
+		add_filter( 'option_siteurl', $mock_url );
 		add_filter(
-			'option_home',
-			static function () {
-				return 'http://test.tri.be';
+			'wp_get_attachment_url',
+			static function ( $url ) use ( $home_url ) {
+				return str_replace( [ $home_url, date( 'Y/m' ) ], [ 'http://test.tri.be', '2018/08' ], $url );
 			}
 		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function _tearDown() {
+		$this->remove_added_uploads();
+		parent::_tearDown();
 	}
 
 	/**
