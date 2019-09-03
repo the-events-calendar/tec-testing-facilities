@@ -66,14 +66,17 @@ class HtmlPartialTestCase extends WPTestCase {
 		};
 		add_filter( 'option_home', $mock_url );
 		add_filter( 'option_siteurl', $mock_url );
-		add_filter( 'wp_get_attachment_url',
-			static function ( $url ) use ( $home_url )
-			{
+		add_filter(
+			'wp_get_attachment_url',
+			static function ( $url ) use ( $home_url ) {
 				return str_replace( [ $home_url, date( 'Y/m' ) ], [ 'http://test.tri.be', '2018/08' ], $url );
 			}
 		);
 	}
-	
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function _tearDown() {
 		$this->remove_added_uploads();
 		parent::_tearDown();
