@@ -57,6 +57,10 @@ class HtmlPartialTestCase extends WPTestCase {
 
 		$home_url = home_url();
 
+		// Before each test make sure to empty the whole uploads directory to avoid file enumeration issues.
+		$uploads = wp_upload_dir();
+		rrmdir( $uploads['basedir'] );
+
 		/*
 		 * To make sure we're not breaking snapshots by a change in the local URL generating them change the `home_url`
 		 * to a fixed value.
@@ -72,14 +76,6 @@ class HtmlPartialTestCase extends WPTestCase {
 				return str_replace( [ $home_url, date( 'Y/m' ) ], [ 'http://test.tri.be', '2018/08' ], $url );
 			}
 		);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function _tearDown() {
-		$this->remove_added_uploads();
-		parent::_tearDown();
 	}
 
 	/**
