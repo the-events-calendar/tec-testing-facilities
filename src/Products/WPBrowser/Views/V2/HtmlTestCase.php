@@ -69,7 +69,7 @@ abstract class HtmlTestCase extends TestCase {
 		add_filter( 'option_siteurl', $mock_url );
 
 		/**
-		* Consider using this setting instead of hacking the `wp_get_attachment_url`
+		* Consider using this setting instead of hacking the `wp_get_attachment_url`.
 		*/
 		// add_filter( 'option_uploads_use_yearmonth_folders', '__return_empty_string' );
 		add_filter(
