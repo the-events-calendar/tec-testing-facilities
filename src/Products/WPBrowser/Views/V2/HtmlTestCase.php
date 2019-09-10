@@ -71,7 +71,7 @@ abstract class HtmlTestCase extends TestCase {
 		/**
 		* Consider using this setting instead of hacking the `wp_get_attachment_url`.
 		*/
-		// add_filter( 'option_uploads_use_yearmonth_folders', '__return_empty_string' );
+		// add_filter( 'option_uploads_use_yearmonth_folders', '__return_empty_string' );.
 		add_filter(
 			'wp_get_attachment_url',
 			static function ( $url ) use ( $home_url ) {
