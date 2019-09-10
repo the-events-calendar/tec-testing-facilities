@@ -51,6 +51,33 @@ abstract class HtmlTestCase extends TestCase {
 		$this->template = $this->make_template_instance();
 		$this->template->set_values( $this->view->get_template_vars(), false );
 		$this->document = $this->make_document_instance();
+
+		$home_url = home_url();
+
+		// Before each test make sure to empty the whole uploads directory to avoid file enumeration issues.
+		$uploads = wp_upload_dir();
+		rrmdir( $uploads['basedir'] );
+
+		/*
+		 * To make sure we're not breaking snapshots by a change in the local URL generating them change the `home_url`
+		 * to a fixed value.
+		 */
+		$mock_url = static function () {
+			return 'http://test.tri.be';
+		};
+		add_filter( 'option_home', $mock_url );
+		add_filter( 'option_siteurl', $mock_url );
+
+		/**
+		* Consider using this setting instead of hacking the `wp_get_attachment_url`.
+		*/
+		// add_filter( 'option_uploads_use_yearmonth_folders', '__return_empty_string' );.
+		add_filter(
+			'wp_get_attachment_url',
+			static function ( $url ) use ( $home_url ) {
+				return str_replace( [ $home_url, date( 'Y/m' ) ], [ 'http://test.tri.be', '2018/08' ], $url );
+			}
+		);
 	}
 
 	/**
