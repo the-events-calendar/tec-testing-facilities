@@ -86,6 +86,8 @@ class HtmlPartialTestCase extends WPTestCase {
 	 * @return string The partial rendered HTML.
 	 */
 	protected function get_partial_html( array $context = [] ) {
+		$this->template->set_values( $context, false );
+
 		return $this->template->template( $this->partial_path, $context );
 	}
 }
