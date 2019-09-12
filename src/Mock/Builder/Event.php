@@ -167,4 +167,18 @@ class Event {
 
 		return $this;
 	}
+
+	/**
+	 * Flags the event as a featured one.
+	 *
+	 * @since TBD
+	 *
+	 * @return $this For chaining.
+	 */
+	public function is_featured() {
+		update_post_meta( $this->event->ID, '_tribe_featured', true );
+		$this->event->featured = true;
+
+		return $this;
+	}
 }
