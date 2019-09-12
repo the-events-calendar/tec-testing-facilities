@@ -7,6 +7,8 @@
 
 namespace Tribe\Test\PHPUnit\Traits;
 
+use Tribe\Test\Mock\Builder\Event;
+
 /**
  * Trait With_Post_Remapping
  *
@@ -256,5 +258,24 @@ trait With_Post_Remapping {
 		$remapped_id = reset( $remap );
 
 		return tribe_get_event( $remapped_id );
+	}
+
+	/**
+	 * The "head" of a mock event creation chain.
+	 *
+	 * @since TBD
+	 *
+	 * @param           string     $target The path, relative to the the plugin `tests/_data/remap` directory, to the static
+	 *                                     JSON file or JSON file template.
+	 * @param array|null $template_vars If specified the content of the specified JSON file target will be used as a
+	 *                                  template, its values filled to those specified in the template variables.
+	 *                                  Variables will be replaced to their `{{ <key> }}` counterpart in the template.
+	 *
+	 * @return Event An instance of the mock event builder; get the event using `get()` on the mock builder.
+	 *
+	 * @see \Tribe\Test\Mock\Builder\Event for the following methods.
+	 */
+	protected function mock_event( $target, array $template_vars = null ) {
+		return new Event( static::factory(), $this->get_mock_event( $target, $template_vars ) );
 	}
 }
