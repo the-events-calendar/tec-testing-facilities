@@ -7,7 +7,6 @@
  * @package Tribe\Test\Mock\Builder
  */
 
-
 namespace Tribe\Test\Mock\Builder;
 
 use Tribe\Utils\Post_Thumbnail;
@@ -41,7 +40,8 @@ class Event {
 	/**
 	 * Event constructor.
 	 *
-	 * @param \WP_Post $event The event post object.
+	 * @param \WP_UnitTest_Factory $factory The factory the mock builder will use to build objects.
+	 * @param \WP_Post             $event The event post object.
 	 */
 	public function __construct( \WP_UnitTest_Factory $factory, \WP_Post $event ) {
 		$this->factory = $factory;
