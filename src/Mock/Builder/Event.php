@@ -9,6 +9,8 @@
 
 namespace Tribe\Test\Mock\Builder;
 
+use Tribe\Events\Test\Factories\Organizer;
+use Tribe\Events\Test\Factories\Venue;
 use Tribe\Utils\Post_Thumbnail;
 use Tribe__Date_Utils as Dates;
 use Tribe__Events__Timezones as Timezones;
@@ -38,6 +40,24 @@ class Event {
 	 * @var \WP_UnitTest_Factory
 	 */
 	protected $factory;
+
+	/**
+	 * An instance of the factory object that will be used to build the Venues.
+	 *
+	 * @since TBD
+	 *
+	 * @var Venue
+	 */
+	protected $venue_factory;
+
+	/**
+	 * An instance of the factory object that will be used to build the Organizers.
+	 *
+	 * @since TBD
+	 *
+	 * @var Organizer
+	 */
+	protected $organizer_factory;
 
 	/**
 	 * Event constructor.
@@ -180,6 +200,45 @@ class Event {
 	public function is_featured() {
 		update_post_meta( $this->event->ID, '_tribe_featured', true );
 		$this->event->featured = true;
+
+		return $this;
+	}
+
+	/**
+	 * Fills the event venue property with a collection of 1 Venue.
+	 *
+	 * @since TBD
+	 *
+	 * @return $this For chaining.
+	 */
+	public function with_venue() {
+		$this->venue_factory = $this->venue_factory ?: new  Venue();
+
+		$venue_id = $this->venue_factory->create_and_get();
+
+		update_post_meta( $this->event->ID, '_EventVenueID', $venue_id );
+
+		return $this;
+	}
+
+	/**
+	 * Creates n Organizers and links them to the event.
+	 *
+	 * @since TBD
+	 *
+	 * @param int $count The number of Organizers to create and link to the event.
+	 *
+	 * @return $this For chaining.
+	 */
+	public function with_organizers( $count = 1 ) {
+		$this->organizer_factory = $this->organizer_factory ?: new Organizer();
+
+		$organizer_ids = array_map( function ()
+		{
+			return $this->organizer_factory->create();
+		}, range( 1, $count ) );
+
+		update_post_meta( $this->event->ID, '_EventOrganizerID', $organizer_ids );
 
 		return $this;
 	}
