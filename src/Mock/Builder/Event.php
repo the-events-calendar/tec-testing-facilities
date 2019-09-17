@@ -159,7 +159,9 @@ class Event {
 	public function is_recurring() {
 		add_filter(
 			'tribe_is_recurring_event',
-			function ( $recurring, $post_id ) {
+			function ( $recurring, $post_id = null ) {
+				$post_id = $post_id ?: \Tribe__Main::post_id_helper( $post_id );
+
 				return (int) $post_id === $this->event->ID;
 			}
 		);
