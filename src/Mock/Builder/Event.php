@@ -233,10 +233,13 @@ class Event {
 	public function with_organizers( $count = 1 ) {
 		$this->organizer_factory = $this->organizer_factory ?: new Organizer();
 
-		$organizer_ids = array_map( function ()
-		{
+		$create = function (){
 			return $this->organizer_factory->create();
-		}, range( 1, $count ) );
+		};
+
+		$organizer_ids = $count > 1
+			? array_map( $create, range( 1, $count ) )
+			: [ $create() ];
 
 		update_post_meta( $this->event->ID, '_EventOrganizerID', $organizer_ids );
 
