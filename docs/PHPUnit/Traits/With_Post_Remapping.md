@@ -49,7 +49,7 @@ tests/_data/remap
     └── 1.template.json
 ```
 
-You're free to use the available ones, or add new ones if required. The trait does not require a specific directory structure to work as long as all remap templates live under the `tests/_data/rempap` directory.  
+You're free to use the available ones, or add new ones if required. The trait does not require a specific directory structure to work as long as all remap templates live under the `tests/_data/remap` directory.  
 
 A remap template is the JSON version of a post and its custom fields.  
 As an example, here is the full content of the `events/featured/1.json`, from The Events Calendar:
