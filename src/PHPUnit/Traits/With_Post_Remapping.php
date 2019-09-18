@@ -24,6 +24,117 @@ trait With_Post_Remapping {
 	protected $dynamic_content = [];
 
 	/**
+	 * Replaces the IDs of remapped posts with their remapped counterpart id.
+	 *
+	 * E.g. if the post with ID `23` had been remapped to the post with ID `89` then:
+	 *  $remapped = $this->remap_post_id_array( [ 23, 24, 25 ], [ 23 => 89 ]);
+	 *  assert( $remapped === [ 89, 24, 25 ] );
+	 *
+	 * @since TBD
+	 *
+	 * @param array $original  The array to replace post IDs into.
+	 * @param array $remap_map The map that should be used for the replacements, usually result of the `remap_posts`
+	 *                         method.
+	 *
+	 * @return array The original array, each remapped post ID replace with its remap counterpart.
+	 *
+	 * @see   With_Post_Remapping::remap_posts() for the format of the remap map.
+	 */
+	protected function remap_post_id_array( array $original, array $remap_map ) {
+		$remapped = $original;
+		foreach ( $remapped as &$post_id ) {
+			$post_id = array_key_exists( $post_id, $remap_map ) ? $remap_map[ $post_id ] : $post_id;
+		}
+
+		return $remapped;
+	}
+
+	/**
+	 * The "head" of a mock event creation chain.
+	 *
+	 * @since TBD
+	 *
+	 * @param string     $target           The path, relative to the the plugin `tests/_data/remap` directory, to the
+	 *                                     static JSON file or JSON file template.
+	 * @param array|null $template_vars    If specified the content of the specified JSON file target will be used as a
+	 *                                     template, its values filled to those specified in the template variables.
+	 *                                     Variables will be replaced to their `{{ <key> }}` counterpart in the
+	 *                                     template.
+	 *
+	 * @return Event An instance of the mock event builder; get the event using `get()` on the mock builder.
+	 *
+	 * @see   \Tribe\Test\Mock\Builder\Event for the following methods.
+	 */
+	protected function mock_event( $target, array $template_vars = null ) {
+		return new Event( static::factory(), $this->get_mock_event( $target, $template_vars ) );
+	}
+
+	/**
+	 * Creates and returns an event post, remapping it to either a static JSON remap file or to a dynamic template
+	 * file.
+	 *
+	 * @since TBD
+	 *
+	 * @param string     $target           The path, relative to the the plugin `tests/_data/remap` directory, to the
+	 *                                     static JSON file or JSON file template.
+	 * @param array|null $template_vars    If specified the content of the specified JSON file target will be used as a
+	 *                                     template, its values filled to those specified in the template variables.
+	 *                                     Variables will be replaced to their `{{ <key> }}` counterpart in the
+	 *                                     template.
+	 *
+	 * @return \WP_Post An event post object, decorated with additional properties attached by the `tribe_get_event`
+	 *                  function.
+	 *
+	 * @see   tribe_get_event() for more details about the attached properties.
+	 */
+	protected function get_mock_event( $target, array $template_vars = null ) {
+		$remapped_id = $this->get_mock_thing( $target, $template_vars );
+
+		return tribe_get_event( $remapped_id );
+	}
+
+	/**
+	 * Remaps a post of any type, a "thing", to a target.
+	 *
+	 * @since TBD
+	 *
+	 * @param string     $target           The path, relative to the the plugin `tests/_data/remap` directory, to the
+	 *                                     static JSON file or JSON file template.
+	 * @param array|null $template_vars    If specified the content of the specified JSON file target will be used as a
+	 *                                     template, its values filled to those specified in the template variables.
+	 *                                     Variables will be replaced to their `{{ <key> }}` counterpart in the
+	 *                                     template.
+	 *
+	 * @return int The remapped post ID.
+	 */
+	protected function get_mock_thing( $target, array $template_vars = null ) {
+		if ( null !== $template_vars ) {
+			// If an array of template variables is specified, then we assume the target should be used as a template.
+			$file                           = $this->get_remap_target_file( $target );
+			$contents                       = file_get_contents( $file );
+			$contents                       = str_replace(
+				array_map(
+					static function ( $key ) {
+						return '{{ ' . $key . ' }}';
+					},
+					array_keys( $template_vars )
+				),
+				$template_vars,
+				$contents
+			);
+			$hash                           = md5( json_encode( func_get_args() ) );
+			$this->dynamic_content[ $hash ] = $contents;
+			$target                         = $hash;
+		}
+
+		$factory = $this->factory ?: static::factory();
+		$post_id = $factory->post->create();
+		$remap   = $this->remap_posts( [ $post_id ], [ $target ] );
+
+		return reset( $remap );
+	}
+
+	/**
 	 * Remaps, pre-filling the cache, some posts to some fake targets.
 	 *
 	 * @param array $posts   The posts to remap in the cache.
@@ -191,91 +302,52 @@ trait With_Post_Remapping {
 		return (array) $decoded;
 	}
 
-	/**
-	 * Replaces the IDs of remapped posts with their remapped counterpart id.
-	 *
-	 * E.g. if the post with ID `23` had been remapped to the post with ID `89` then:
-	 *  $remapped = $this->remap_post_id_array( [ 23, 24, 25 ], [ 23 => 89 ]);
-	 *  assert( $remapped === [ 89, 24, 25 ] );
+	/** Creates and returns a venue post, remapping it to either a static JSON remap file or to a dynamic template file.
 	 *
 	 * @since TBD
 	 *
-	 * @param array $original The array to replace post IDs into.
-	 * @param array $remap_map The map that should be used for the replacements, usually result of the `remap_posts`
-	 *                         method.
+	 * @param string     $target           The path, relative to the the plugin `tests/_data/remap` directory, to the
+	 *                                     static JSON file or JSON file template.
+	 * @param array|null $template_vars    If specified the content of the specified JSON file target will be used as a
+	 *                                     template, its values filled to those specified in the template variables.
+	 *                                     Variables will be replaced to their `{{ <key> }}` counterpart in the
+	 *                                     template.
 	 *
-	 * @return array The original array, each remapped post ID replace with its remap counterpart.
+	 * @return \WP_Post A venue post object, decorated with additional properties attached by the
+	 *                  `tribe_get_venue_object` function, if available.
 	 *
-	 * @see With_Post_Remapping::remap_posts() for the format of the remap map.
+	 * @see   tribe_get_venue_object() for more details about the attached properties.
 	 */
-	protected function remap_post_id_array( array $original, array $remap_map ) {
-		$remapped = $original;
-		foreach ( $remapped as &$post_id ) {
-			$post_id = array_key_exists( $post_id, $remap_map ) ? $remap_map[ $post_id ] : $post_id;
-		}
+	protected function get_mock_venue( $target, array $template_vars = null ) {
+		$remapped_id = $this->get_mock_thing( $target, $template_vars );
 
-		return $remapped;
+		return function_exists( 'tribe_get_venue_object' )
+			? tribe_get_venue_object( $remapped_id )
+			: get_post( $remapped_id );
 	}
 
-	/**
-	 * Creates and returns an event post, remapping it to either a static JSON remap file or to a dynamic template file.
+	/** Creates and returns an organizer post, remapping it to either a static JSON remap file or to a dynamic template
+	 * file.
 	 *
 	 * @since TBD
 	 *
-	 * @param           string     $target The path, relative to the the plugin `tests/_data/remap` directory, to the static
-	 *                                     JSON file or JSON file template.
-	 * @param array|null $template_vars If specified the content of the specified JSON file target will be used as a
-	 *                                  template, its values filled to those specified in the template variables.
-	 *                                  Variables will be replaced to their `{{ <key> }}` counterpart in the template.
+	 * @param string     $target           The path, relative to the the plugin `tests/_data/remap` directory, to the
+	 *                                     static JSON file or JSON file template.
+	 * @param array|null $template_vars    If specified the content of the specified JSON file target will be used as a
+	 *                                     template, its values filled to those specified in the template variables.
+	 *                                     Variables will be replaced to their `{{ <key> }}` counterpart in the
+	 *                                     template.
 	 *
-	 * @return \WP_Post An event post object, decorated with additional properties attached by the `tribe_get_event`
-	 *                  function.
+	 * @return \WP_Post An organizer post object, decorated with additional properties attached by the
+	 *                  `tribe_get_venue_object` function, if available.
 	 *
-	 * @see tribe_get_event() for more details about the attached properties.
+	 * @see   tribe_get_organizer_object() for more details about the attached properties.
 	 */
-	protected function get_mock_event( $target, array $template_vars = null ) {
-		if ( null !== $template_vars ) {
-			// If an array of template variables is specified, then we assume the target should be used as a template.
-			$file                           = $this->get_remap_target_file( $target );
-			$contents                       = file_get_contents( $file );
-			$contents                       = str_replace(
-				array_map(
-					static function ( $key ) {
-						return '{{ ' . $key . ' }}';
-					},
-					array_keys( $template_vars )
-				),
-				$template_vars,
-				$contents
-			);
-			$hash                           = md5( json_encode( func_get_args() ) );
-			$this->dynamic_content[ $hash ] = $contents;
-			$target                         = $hash;
-		}
+	protected function get_mock_organizer( $target, array $template_vars = null ) {
+		$remapped_id = $this->get_mock_thing( $target, $template_vars );
 
-		$post_id     = static::factory()->post->create();
-		$remap       = $this->remap_posts( [ $post_id ], [ $target ] );
-		$remapped_id = reset( $remap );
-
-		return tribe_get_event( $remapped_id );
-	}
-
-	/**
-	 * The "head" of a mock event creation chain.
-	 *
-	 * @since TBD
-	 *
-	 * @param           string     $target The path, relative to the the plugin `tests/_data/remap` directory, to the static
-	 *                                     JSON file or JSON file template.
-	 * @param array|null $template_vars If specified the content of the specified JSON file target will be used as a
-	 *                                  template, its values filled to those specified in the template variables.
-	 *                                  Variables will be replaced to their `{{ <key> }}` counterpart in the template.
-	 *
-	 * @return Event An instance of the mock event builder; get the event using `get()` on the mock builder.
-	 *
-	 * @see \Tribe\Test\Mock\Builder\Event for the following methods.
-	 */
-	protected function mock_event( $target, array $template_vars = null ) {
-		return new Event( static::factory(), $this->get_mock_event( $target, $template_vars ) );
+		return function_exists( 'tribe_get_organizer_object' )
+			? tribe_get_organizer_object( $remapped_id )
+			: get_post( $remapped_id );
 	}
 }
