@@ -11,6 +11,7 @@ namespace Tribe\Test\Mock\Builder;
 
 use Tribe\Events\Test\Factories\Organizer;
 use Tribe\Events\Test\Factories\Venue;
+use Tribe\Test\PHPUnit\Traits\With_Post_Remapping;
 use Tribe\Utils\Post_Thumbnail;
 use Tribe__Date_Utils as Dates;
 use Tribe__Events__Timezones as Timezones;
@@ -23,6 +24,8 @@ use Tribe__Events__Timezones as Timezones;
  * @package Tribe\Test\Mock\Builder
  */
 class Event {
+	use With_Post_Remapping;
+
 	/**
 	 * An event post object.
 	 *
@@ -209,12 +212,23 @@ class Event {
 	 *
 	 * @since TBD
 	 *
+	 * @param string     $target              The path, relative to the the plugin `tests/_data/remap` directory, to the
+	 *                                        static JSON file or JSON file template.
+	 * @param array|null $template_vars       If specified the content of the specified JSON file target will be used as
+	 *                                        a template, its values filled to those specified in the template variables.
+	 *                                        Variables will be replaced to their `{{ <key> }}` counterpart in the
+	 *                                        template.
+	 *
 	 * @return $this For chaining.
 	 */
-	public function with_venue() {
-		$this->venue_factory = $this->venue_factory ?: new  Venue();
-
-		$venue_id = $this->venue_factory->create_and_get();
+	public function with_venue( $target = null, array $template_vars = null ) {
+		if ( null !== $target ) {
+			$venue    = $this->get_mock_venue( $target, $template_vars );
+			$venue_id = $venue->ID;
+		} else {
+			$this->venue_factory = $this->venue_factory ?: new  Venue();
+			$venue_id = $this->venue_factory->create_and_get();
+		}
 
 		update_post_meta( $this->event->ID, '_EventVenueID', $venue_id );
 
@@ -224,22 +238,40 @@ class Event {
 	/**
 	 * Creates n Organizers and links them to the event.
 	 *
+	 *
 	 * @since TBD
 	 *
 	 * @param int $count The number of Organizers to create and link to the event.
+	 * @param string     $target              The path, relative to the the plugin `tests/_data/remap` directory, to the
+	 *                                        static JSON file or JSON file template.
+	 * @param array|null $template_vars_array If specified the content of the specified JSON file target will be used as
+	 *                                        a template, its values filled to those specified in the template variables.
+	 *                                        Variables will be replaced to their `{{ <key> }}` counterpart in the
+	 *                                        template.
 	 *
 	 * @return $this For chaining.
 	 */
-	public function with_organizers( $count = 1 ) {
-		$this->organizer_factory = $this->organizer_factory ?: new Organizer();
+	public function with_organizers( $count = 1, $target_template = null, array $template_vars_array = null  ) {
+		if ( null !== $target_template ) {
+			$create              = function ( $template_vars ) use ( $target_template )
+			{
+				return $this->get_mock_organizer( $target_template, $template_vars );
+			};
+			$template_vars_array = count( $template_vars_array ) === $count
+				? $template_vars_array
+				: array_pad( $template_vars_array, $count, end( $template_vars_array ) );
+			$organizer_ids       = array_map( $create, $template_vars_array );
+		} else {
+			$this->organizer_factory = $this->organizer_factory ?: new Organizer();
 
-		$create = function () {
-			return $this->organizer_factory->create();
-		};
+			$create = function () {
+				return $this->organizer_factory->create();
+			};
 
-		$organizer_ids = $count > 1
-			? array_map( $create, range( 1, $count ) )
-			: [ $create() ];
+			$organizer_ids = $count > 1
+				? array_map( $create, range( 1, $count ) )
+				: [ $create() ];
+		}
 
 		update_post_meta( $this->event->ID, '_EventOrganizerID', $organizer_ids );
 
