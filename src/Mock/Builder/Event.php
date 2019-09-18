@@ -233,7 +233,7 @@ class Event {
 	public function with_organizers( $count = 1 ) {
 		$this->organizer_factory = $this->organizer_factory ?: new Organizer();
 
-		$create = function (){
+		$create = function () {
 			return $this->organizer_factory->create();
 		};
 
