@@ -85,7 +85,10 @@ class Event {
 	 */
 	public function with_thumbnail( $path = 'images/featured-image.jpg' ) {
 		$thumbnail_id = $this->factory->attachment->create_upload_object( codecept_data_dir( $path ) );
-		set_post_thumbnail( $this->event->ID, $thumbnail_id );
+
+		$this->ensure_post_ids( [ $thumbnail_id ] );
+
+		$this->update_post_meta( '_thumbnail_id', $thumbnail_id );
 		$this->event->thumbnail = new Post_Thumbnail( $this->event->ID );
 
 		return $this;
@@ -201,7 +204,7 @@ class Event {
 	 * @return $this For chaining.
 	 */
 	public function is_featured() {
-		update_post_meta( $this->event->ID, '_tribe_featured', true );
+		$this->update_post_meta( '_tribe_featured', '1' );
 		$this->event->featured = true;
 
 		return $this;
@@ -227,10 +230,12 @@ class Event {
 			$venue_id = $venue->ID;
 		} else {
 			$this->venue_factory = $this->venue_factory ?: new  Venue();
-			$venue_id            = $this->venue_factory->create_and_get();
+			$venue_id            = $this->venue_factory->create();
 		}
 
-		update_post_meta( $this->event->ID, '_EventVenueID', $venue_id );
+		$this->ensure_post_ids( [ $venue_id ] );
+
+		$this->update_post_meta( '_EventVenueID', $venue_id );
 
 		return $this;
 	}
@@ -252,13 +257,19 @@ class Event {
 	 */
 	public function with_organizers( $count = 1, $target_template = null, array $template_vars_array = null ) {
 		if ( null !== $target_template ) {
-			$create              = function ( $template_vars ) use ( $target_template ) {
+			$create = function ( array $template_vars = null ) use ( $target_template ) {
 				return $this->get_mock_organizer( $target_template, $template_vars );
 			};
-			$template_vars_array = count( $template_vars_array ) === $count
-				? $template_vars_array
-				: array_pad( $template_vars_array, $count, end( $template_vars_array ) );
-			$organizer_ids       = array_map( $create, $template_vars_array );
+
+			if ( ! empty( $template_vars_array ) ) {
+				$template_vars_array = count( $template_vars_array ) === $count
+					? $template_vars_array
+					: array_pad( $template_vars_array, $count, end( $template_vars_array ) );
+			} else {
+				$template_vars_array = array_fill( 0, $count, [] );
+			}
+
+			$organizer_ids = array_map( $create, $template_vars_array );
 		} else {
 			$this->organizer_factory = $this->organizer_factory ?: new Organizer();
 
@@ -271,8 +282,61 @@ class Event {
 				: [ $create() ];
 		}
 
-		update_post_meta( $this->event->ID, '_EventOrganizerID', $organizer_ids );
+		$organizer_ids = array_map(
+			static function ( $post_id ) {
+				return $post_id instanceof \WP_Post ? $post_id->ID : $post_id;
+			},
+			$organizer_ids
+		);
+
+		$this->ensure_post_ids( $organizer_ids );
+
+		$this->update_post_meta( '_EventOrganizerID', $organizer_ids );
 
 		return $this;
+	}
+
+	/**
+	 * Updates the remapped post meta value in cache.
+	 *
+	 * @since TBD
+	 *
+	 * @param string $meta_key   The meta key to update.
+	 * @param mixed  $meta_value The meta value.
+	 */
+	protected function update_post_meta( $meta_key, $meta_value ) {
+		$all_meta              = get_post_meta( $this->event->ID );
+		$all_meta[ $meta_key ] = [ $meta_value ];
+		wp_cache_set( $this->event->ID, $all_meta, 'post_meta' );
+	}
+
+	/**
+	 * Checks a list of generated post IDs for conflicts with the current mocked event post ID.
+	 *
+	 * @since TBD
+	 *
+	 * @param array $post_ids An array of generated post IDs to check.
+	 *
+	 * @throws \RuntimeException If one of the generated post IDs conflicts with the currently mocked event one.
+	 */
+	protected function ensure_post_ids( array $post_ids ) {
+		$array_intersect = array_intersect( $post_ids, [ $this->event->ID ] );
+		if ( count( $array_intersect ) === 0 ) {
+			return;
+		}
+
+		$post_type = get_post_type( reset( $array_intersect ) );
+
+		throw new \RuntimeException(
+			"One of the generated posts ({$post_type}) has the same post ID as the " .
+			"current event being mocked (post ID {$this->event->ID})."
+			. PHP_EOL
+			. 'To avoid this either update, or change, the Event template you\'re using to have a different, ' .
+			'hard-coded, ID' .
+			( in_array( $post_type, [ 'tribe_venue', 'tribe_organizer' ], true )
+				? ( ', use a Venue or Organizer template if you\'re not using it, or use a different Venue or Organizer ' .
+					'template.' )
+				: '.' )
+		);
 	}
 }
