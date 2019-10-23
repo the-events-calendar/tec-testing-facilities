@@ -121,19 +121,12 @@ class Event {
 		if ( $duration < 1 ) {
 			throw new \InvalidArgumentException( 'Day duration should be at least 2' );
 		}
-		$date_interval             = new \DateInterval( 'P' . ( $duration ) . 'D' );
-		$new_end_date              = $this->event->dates->end->add( $date_interval );
-		$new_end_date_utc          = $this->event->dates->end_utc->add( $date_interval );
-		$this->event->end_date     = $new_end_date->format( Dates::DBDATETIMEFORMAT );
-		$this->event->end_date_utc = $new_end_date_utc->format( Dates::DBDATETIMEFORMAT );
-		$this->event->dates        = (object) [
-			'start'     => $this->event->dates->start,
-			'start_utc' => $this->event->dates->start_utc,
-			'end'       => $new_end_date,
-			'end_utc'   => $new_end_date_utc,
-		];
-		$this->event->duration     = $new_end_date->getTimestamp() - $this->event->dates->start->getTimestamp();
-		$this->event->multiday     = $day_duration;
+		$date_interval = new \DateInterval( 'P' . ( $duration ) . 'D' );
+		foreach ( [ 'end', 'end_utc', 'end_site', 'end_display' ] as $update ) {
+			$this->event->dates->{$update} = $this->event->dates->{$update}->add( $date_interval );
+		}
+		$this->event->duration = $this->event->dates->end->getTimestamp() - $this->event->dates->start->getTimestamp();
+		$this->event->multiday = $day_duration;
 
 		return $this;
 	}
@@ -151,24 +144,34 @@ class Event {
 		$timezone = Timezones::build_timezone_object( Timezones::get_event_timezone_string( $this->event->timezone ) );
 		$utc      = new \DateTimeZone( 'UTC' );
 
-		$start = Dates::build_date_object(
-			tribe_beginning_of_day( $this->event->dates->start->format( Dates::DBDATETIMEFORMAT ) ),
-			$timezone
+		$start            = \DateTimeImmutable::createFromMutable(
+			Dates::build_date_object(
+				tribe_beginning_of_day( $this->event->dates->start->format( Dates::DBDATETIMEFORMAT ) ),
+				$timezone
+			)
 		);
-		$end   = Dates::build_date_object(
-			tribe_end_of_day( $this->event->dates->end->format( Dates::DBDATETIMEFORMAT ) ),
-			$timezone
+		$end              = \DateTimeImmutable::createFromMutable(
+			Dates::build_date_object(
+				tribe_end_of_day( $this->event->dates->end->format( Dates::DBDATETIMEFORMAT ) ),
+				$timezone
+			)
 		);
+		$site_timezone    = Timezones::build_timezone_object();
+		$display_timezone = Timezones::is_mode( Timezones::SITE_TIMEZONE ) ? $site_timezone : $timezone;
 
 		$this->event->start_date     = $start->format( Dates::DBDATETIMEFORMAT );
 		$this->event->start_date_utc = $start->setTimezone( $utc )->format( Dates::DBDATETIMEFORMAT );
 		$this->event->end_date       = $end->format( Dates::DBDATETIMEFORMAT );
 		$this->event->end_date_utc   = $end->setTimezone( $utc )->format( Dates::DBDATETIMEFORMAT );
 		$this->event->dates          = (object) [
-			'start'     => $start,
-			'start_utc' => $start->setTimezone( $utc ),
-			'end'       => $end,
-			'end_utc'   => $end->setTimezone( $utc ),
+			'start'         => $start,
+			'start_utc'     => $start->setTimezone( $utc ),
+			'start_site'    => $start->setTimezone( $site_timezone ),
+			'start_display' => $start->setTimezone( $display_timezone ),
+			'end'           => $end,
+			'end_utc'       => $end->setTimezone( $utc ),
+			'end_site'      => $end->setTimezone( $site_timezone ),
+			'end_display'   => $end->setTimezone( $display_timezone ),
 		];
 		$this->event->duration       = $end->getTimestamp() - $start->getTimestamp();
 
