@@ -123,6 +123,9 @@ class Event {
 		}
 		$date_interval = new \DateInterval( 'P' . ( $duration ) . 'D' );
 		foreach ( [ 'end', 'end_utc', 'end_site', 'end_display' ] as $update ) {
+			if ( ! isset( $this->event->dates->{$update} ) ) {
+				continue;
+			}
 			$this->event->dates->{$update} = $this->event->dates->{$update}->add( $date_interval );
 		}
 		$this->event->duration = $this->event->dates->end->getTimestamp() - $this->event->dates->start->getTimestamp();
