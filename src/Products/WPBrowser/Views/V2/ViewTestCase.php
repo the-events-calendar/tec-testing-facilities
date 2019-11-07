@@ -182,7 +182,7 @@ class ViewTestCase extends TestCase {
 			$date_dependant,
 			sprintf(
 				"Date-dependent template vars found matching today date: all dates should be mocked!\n%s",
-				json_encode( array_keys( $date_dependant ), JSON_PRETTY_PRINT )
+				json_encode( $date_dependant, JSON_PRETTY_PRINT )
 			)
 		);
 
