@@ -350,4 +350,44 @@ trait With_Post_Remapping {
 			? tribe_get_organizer_object( $remapped_id )
 			: get_post( $remapped_id );
 	}
+
+	/**
+	 * Inserts a post in the database with a direct query.
+	 *
+	 * This is useful to create real versions of mock posts.
+	 *
+	 * @since TBD
+	 *
+	 * @param \WP_Post $post The post object to insert.
+	 */
+	protected function wp_insert_post( \WP_Post $post ) {
+		global $wpdb;
+		$post_fields         = [
+			'ID',
+			'post_author',
+			'post_date',
+			'post_date_gmt',
+			'post_content',
+			'post_title',
+			'post_excerpt',
+			'post_status',
+			'comment_status',
+			'ping_status',
+			'post_password',
+			'post_name',
+			'to_ping',
+			'pinged',
+			'post_modified',
+			'post_modified_gmt',
+			'post_content_filtered',
+			'post_parent',
+			'guid',
+			'menu_order',
+			'post_type',
+			'post_mime_type',
+			'comment_count',
+		];
+		$array_intersect_key = array_intersect_key( (array) $post, array_combine( $post_fields, $post_fields ) );
+		$wpdb->insert( $wpdb->posts, $array_intersect_key );
+	}
 }
