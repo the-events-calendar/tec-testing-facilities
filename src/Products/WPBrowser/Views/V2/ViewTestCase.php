@@ -38,6 +38,13 @@ class ViewTestCase extends TestCase {
 	protected $mock_date_value = '2019-01-01 09:00:00';
 
 	/**
+	 * Today date, unmocked, in the `Y-m-d` format.
+	 *
+	 * @var string
+	 */
+	protected $today_date;
+
+	/**
 	 * Sets up the View test context mocking some commonly used functions and setting up the code to filter some time,
 	 * or date, dependant values to keep the snapshots consistent across time.
 	 */
@@ -46,6 +53,8 @@ class ViewTestCase extends TestCase {
 
 		// Start Function Mocker.
 		Test::setUp();
+
+		$this->today_date = date( 'Y-m-d' );
 
 		// Mock calls to the `date` function to return a fixed value when getting the current date.
 		Test::replace(
@@ -80,6 +89,9 @@ class ViewTestCase extends TestCase {
 		};
 		add_filter( 'tribe_events_pro_recurrence_small_batch_size', $return_int_max );
 		add_filter( 'tribe_events_pro_recurrence_batch_size', $return_int_max );
+
+		$this->date_dependent_template_vars = [];
+		add_filter( 'tribe_events_views_v2_view_template_vars', [ $this, 'collect_date_dependent_values' ] );
 	}
 
 	/**
@@ -150,5 +162,30 @@ class ViewTestCase extends TestCase {
 			)
 		);
 	}
-}
 
+	/**
+	 * Collects, while the View template vars are set up, any value that contains today date
+	 * to spot unmocked, date-dependent, template vars.
+	 *
+	 * @param array $template_vars An array of template variables, as set up from the View and
+	 *                             and filtering functions.
+	 */
+	public function collect_date_dependent_values( $template_vars ) {
+		$date_dependant = array_filter(
+			$template_vars,
+			function ( $v ) {
+				return false !== strpos( json_encode( $v ), $this->today_date );
+			}
+		);
+
+		$this->assertEmpty(
+			$date_dependant,
+			sprintf(
+				"Date-dependent template vars found matching today date: all dates should be mocked!\n%s",
+				json_encode( array_keys( $date_dependant ), JSON_PRETTY_PRINT )
+			)
+		);
+
+		return $template_vars;
+	}
+}
