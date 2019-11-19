@@ -174,7 +174,21 @@ class ViewTestCase extends TestCase {
 		$date_dependant = array_filter(
 			$template_vars,
 			function ( $v ) {
-				return false !== strpos( json_encode( $v ), $this->today_date );
+				// The pretty print will print each value on diff. lines.
+				$encoded = json_encode( $v, JSON_PRETTY_PRINT );
+
+				// Ignore the `post_date` and `post_modified` fields.
+				$encoded = implode(
+					PHP_EOL,
+					array_filter(
+						explode( PHP_EOL, $encoded ),
+						static function ( $line ) {
+							return ! preg_match( '/post_(date|modified)(_gmt)*/', $line );
+						}
+					)
+				);
+
+				return false !== strpos( $encoded, $this->today_date );
 			}
 		);
 
