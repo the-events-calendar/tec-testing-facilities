@@ -92,6 +92,9 @@ class ViewTestCase extends TestCase {
 
 		$this->date_dependent_template_vars = [];
 		add_filter( 'tribe_events_views_v2_view_template_vars', [ $this, 'collect_date_dependent_values' ] );
+
+		// Refresh the global Contex to start fresh on each test run.
+		tribe_context()->refresh();
 	}
 
 	/**
