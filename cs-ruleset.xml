@@ -5,4 +5,7 @@
         <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
     </rule>
     <rule ref="WordPress-Docs"/>
+    <rule ref="Generic.Arrays.DisallowShortArraySyntax">
+        <exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+    </rule>
 </ruleset>

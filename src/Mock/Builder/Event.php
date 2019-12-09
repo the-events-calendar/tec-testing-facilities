@@ -192,7 +192,7 @@ class Event {
 		add_filter(
 			'tribe_is_recurring_event',
 			function ( $recurring, $post_id = null ) {
-				$post_id = $post_id ?: \Tribe__Main::post_id_helper( $post_id );
+				$post_id = $post_id ? $post_id : \Tribe__Main::post_id_helper( $post_id );
 
 				return (int) $post_id === $this->event->ID;
 			}
@@ -235,7 +235,7 @@ class Event {
 			$venue    = $this->get_mock_venue( $target, $template_vars );
 			$venue_id = $venue->ID;
 		} else {
-			$this->venue_factory = $this->venue_factory ?: new  Venue();
+			$this->venue_factory = $this->venue_factory ? $this->venue_factory : new  Venue();
 			$venue_id            = $this->venue_factory->create();
 		}
 
@@ -277,7 +277,7 @@ class Event {
 
 			$organizer_ids = array_map( $create, $template_vars_array );
 		} else {
-			$this->organizer_factory = $this->organizer_factory ?: new Organizer();
+			$this->organizer_factory = $this->organizer_factory ? $this->organizer_factory : new Organizer();
 
 			$create = function () {
 				return $this->organizer_factory->create();

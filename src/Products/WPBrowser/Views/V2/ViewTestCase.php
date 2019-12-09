@@ -54,6 +54,7 @@ class ViewTestCase extends TestCase {
 		// Start Function Mocker.
 		Test::setUp();
 
+		// phpcs:ignore
 		$this->today_date = date( 'Y-m-d' );
 
 		// Mock calls to the `date` function to return a fixed value when getting the current date.
@@ -92,6 +93,9 @@ class ViewTestCase extends TestCase {
 
 		$this->date_dependent_template_vars = [];
 		add_filter( 'tribe_events_views_v2_view_template_vars', [ $this, 'collect_date_dependent_values' ] );
+
+		// Refresh the global Contex to start fresh on each test run.
+		tribe_context()->refresh();
 	}
 
 	/**
