@@ -75,6 +75,7 @@ abstract class HtmlTestCase extends TestCase {
 		add_filter(
 			'wp_get_attachment_url',
 			static function ( $url ) use ( $home_url ) {
+				// phpcs:ignore
 				return str_replace( [ $home_url, date( 'Y/m' ) ], [ 'http://test.tri.be', '2018/08' ], $url );
 			}
 		);

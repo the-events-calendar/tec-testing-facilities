@@ -54,6 +54,7 @@ class ViewTestCase extends TestCase {
 		// Start Function Mocker.
 		Test::setUp();
 
+		// phpcs:ignore
 		$this->today_date = date( 'Y-m-d' );
 
 		// Mock calls to the `date` function to return a fixed value when getting the current date.

@@ -127,7 +127,7 @@ trait With_Post_Remapping {
 			$target                         = $hash;
 		}
 
-		$factory = $this->factory ?: static::factory();
+		$factory = $this->factory ? $this->factory : static::factory();
 		$post_id = $factory->post->create();
 		$remap   = $this->remap_posts( [ $post_id ], [ $target ] );
 
