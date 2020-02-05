@@ -12,6 +12,7 @@ namespace Tribe\Test\Products\WPBrowser\Views\V2;
 use Codeception\TestCase\WPTestCase;
 use Spatie\Snapshots\MatchesSnapshots;
 use tad\WP\Snapshots\WPHtmlOutputDriver;
+use Tribe\Test\Snapshots\TribeHtmlOutputDriver;
 use Tribe\Events\Test\Factories\Event;
 use Tribe\Events\Test\Factories\Organizer;
 use Tribe\Events\Test\Factories\Venue;
@@ -98,7 +99,7 @@ abstract class TestCase extends WPTestCase {
 		);
 
 		// Setup a new HTML output driver to make sure our stuff is tolerable.
-		$this->driver = new WPHtmlOutputDriver( home_url(), 'http://views.dev' );
+		$this->driver = new TribeHtmlOutputDriver( home_url(), 'http://views.dev' );
 		$this->driver->setTimeDependentKeys( [ 'tribe-events-views[_wpnonce]' ] );
 		$this->driver->setTimeDependentAttributes( [ 'data-view-breakpoint-pointer' ] );
 
