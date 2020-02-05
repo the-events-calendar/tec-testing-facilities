@@ -10,6 +10,7 @@
 namespace Tribe\Test\Snapshots;
 
 use tad\WP\Snapshots\WPHtmlOutputDriver;
+use tad\WP\Snapshots\Assert;
 
 /**
  * Class TribeHtmlOutputDriver
