@@ -57,4 +57,24 @@ class TribeHtmlOutputDriver extends WPHtmlOutputDriver {
 
 		return $this->normalizeHtml($doc->__toString());
 	}
+
+	/**
+	 * Returns an array that the driver will use to identify and void
+	 * by attribute name time-dependent values like data attributes.
+	 *
+	 * @return array
+	 */
+	public function getTimeDependentAttributes(): array {
+		return $this->timeDependentAttributes;
+	}
+
+	/**
+	 * Sets the array that the driver will use to identify and void
+	 * by attribute name time-dependent values like data attributes.
+	 *
+	 * @param array $timeDependentAttributes
+	 */
+	public function setTimeDependentAttributes(array $timeDependentAttributes) {
+		$this->timeDependentAttributes = $timeDependentAttributes;
+	}
 }
