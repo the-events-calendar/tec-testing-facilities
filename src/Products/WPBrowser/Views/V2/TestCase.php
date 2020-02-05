@@ -102,6 +102,10 @@ abstract class TestCase extends WPTestCase {
 		$this->driver->setTimeDependentKeys( [ 'tribe-events-views[_wpnonce]' ] );
 		$this->driver->setTimeDependentAttributes( [ 'data-view-breakpoint-pointer' ] );
 
+		add_filter( 'tribe_events_views_v2_view_breakpoint_pointer', function ( $pointer ) {
+			return 'random-id';
+		} );
+
 		// Let's make sure there are no left-over events between tests.
 		tribe_events()->delete();
 
