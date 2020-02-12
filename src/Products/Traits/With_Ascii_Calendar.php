@@ -91,8 +91,8 @@ trait With_Ascii_Calendar {
 			)
 		);
 
-		$str = implode( ' | ', $header_row ) . "|\n" . $weeks;
+		$ascii_calendar = implode( ' | ', $header_row ) . "|\n" . $weeks;
 
-		return $str;
+		return $ascii_calendar;
 	}
 }
