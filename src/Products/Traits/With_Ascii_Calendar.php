@@ -29,6 +29,10 @@ trait With_Ascii_Calendar {
 	 */
 	protected function render_ascii_calendar( $start_day, $end_day, array $events_by_day = [], $week_size = 7 ) {
 		$pad        = static function ( $input ) {
+			if ( $input instanceof \WP_Post ) {
+				$input = $input->ID;
+			}
+
 			return str_pad( $input, 5, ' ', STR_PAD_BOTH );
 		};
 		$all_days   = [];
