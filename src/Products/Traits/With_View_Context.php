@@ -14,7 +14,7 @@ use Tribe__Utils__Array as Arr;
  *
  * @package Tribe\Test\Products\Traits
  *
- * @property array<\WP_Post> $events An array of events generated during the `setup_context` method.
+ * @property array<string,\WP_Post> $events An array of events generated during the `setup_context` method.
  */
 trait With_View_Context {
 	/**
