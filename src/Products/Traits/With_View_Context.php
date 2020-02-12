@@ -7,6 +7,9 @@
 
 namespace Tribe\Test\Products\Traits;
 
+use tad\WPBrowser\Exceptions\WpCliException;
+use Tribe__Date_Utils as Dates;
+use Tribe__Events__Template__Month as Month;
 use Tribe__Utils__Array as Arr;
 
 /**
@@ -22,8 +25,8 @@ trait With_View_Context {
 	 * sources of data the View test will require.
 	 *
 	 * @param array<string,mixed> $alterations An array of alterations to apport to the context.
-	 *                                         Some keys are processed and removed (`options`, `tribe_options`, `events`).
-	 *                                         Those left are set on the returned Context object.
+	 *                                         Some keys are processed and removed (`options`, `tribe_options`,
+	 *                                         `events`). Those left are set on the returned Context object.
 	 *
 	 * @return \Tribe__Context The context as altered per the alterations.
 	 *
@@ -56,6 +59,115 @@ trait With_View_Context {
 		$this->assertContainsOnlyInstancesOf( \WP_Post::class, $this->events );
 
 		return tribe_context()->alter( $alterations );
+	}
+
+	/**
+	 * Builds a "legend" of each event, by post ID.
+	 *
+	 * @return string The event legend.
+	 * @todo move this to the Trait.
+	 *
+	 * The legend should be used to provide more information during debug of failures.
+	 */
+	protected function build_event_legend() {
+		return "Event legend:\n\n" . implode(
+			"\n",
+			array_map(
+				static function ( $event ) {
+					return sprintf(
+						'%d - tz: %s; start: %s; end: %s; all-day: %s',
+						$event->ID,
+						get_post_meta( $event->ID, '_EventTimezone', true ),
+						get_post_meta( $event->ID, '_EventStartDate', true ),
+						get_post_meta( $event->ID, '_EventEndDate', true ),
+						get_post_meta( $event->ID, '_EventAllDay', true ) ? 'yes' : 'no'
+					);
+				},
+				$this->events
+			)
+		) . "\n";
+	}
+
+	/**
+	 * Parses the expected entry of the data provider to build an array of expectations that allow referring to the
+	 * events by name, rather than by post ID.
+	 *
+	 * @param array<string,array> $expected An map of the expectations.
+	 *
+	 * @return array The expectations, in a `list` compatible format.
+	 */
+	protected function parse_expected_events( array $expected ) {
+		$expected_events = array_combine(
+			array_keys( $expected['events'] ),
+			array_map(
+				function ( array $event_names ) {
+					$event_ids = [];
+					foreach ( $event_names as $event_name ) {
+						$event_ids[] = ( $this->events[ $event_name ] )->ID;
+					}
+
+					return $event_ids;
+				},
+				$expected['events']
+			)
+		);
+
+		$expected_stack = array_combine(
+			array_keys( $expected['stack'] ),
+			array_map(
+				function ( array $event_names ) {
+					$event_ids = [];
+					foreach ( $event_names as $event_name ) {
+						// Take stack spacers into account.
+						$event_ids[] = null !== $event_name ?
+							( $this->events[ $event_name ] )->ID
+							: null;
+					}
+
+					return $event_ids;
+				},
+				$expected['stack']
+			)
+		);
+
+		return [ $expected_events, $expected_stack ];
+	}
+
+	/**
+	 * Builds the set of days we expect to see in the View results.
+	 *
+	 * @param array<string,mixed> $alterations The alterations to build the expected days from.
+	 *
+	 * @return array<string> An array of days, w/o gaps, each in the `Y-m-d` format.
+	 * @throws \Exception If a missing alteration key is missing.
+	 */
+	protected function build_expected_days( array $alterations = [] ) {
+		$this->ensure_alteration( __METHOD__, 'event_date', $alterations );
+		$this->ensure_alteration( __METHOD__, 'options.timezone_string', $alterations );
+		$this->ensure_alteration( __METHOD__, 'options.start_of_week', $alterations );
+
+		$event_date    = $alterations['event_date'];
+		$site_timezone = $alterations['options']['timezone_string'];
+		$start_of_week = $alterations['options']['start_of_week'];
+
+		$expected_days = [];
+		$one_day       = Dates::interval( 'P1D' );
+		$one_second    = Dates::interval( 'PT1S' );
+		$grid_start    = Dates::build_date_object( Month::calculate_first_cell_datebuild_expected_daye( $event_date ), $site_timezone );
+		$grid_end      = Dates::build_date_object( Month::calculate_final_cell_date( $event_date ), $site_timezone );
+		// compensate for the last day, else it will not be included in the period.
+		$period = new \DatePeriod( $grid_start, $one_day, $grid_end->add( $one_second ) );
+
+		foreach ( $period as $day ) {
+			$expected_days[] = $day->format( Dates::DBDATEFORMAT );
+		}
+
+		// Sanity check.
+		$this->assertEquals( $grid_start->format( Dates::DBDATEFORMAT ), reset( $expected_days ) );
+		$this->assertEquals( $grid_end->format( Dates::DBDATEFORMAT ), end( $expected_days ) );
+		$this->assertEquals( $start_of_week, $grid_start->format( 'w' ) );
+
+		return $expected_days;
 	}
 
 	/**
