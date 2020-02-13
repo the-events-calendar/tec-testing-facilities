@@ -19,6 +19,8 @@ trait With_Json_Data_Sets {
 	/**
 	 * Yields the JSON data sets stored in the test case case `data-sets/<short_class_name>` sibling directory.
 	 *
+	 * The method will scaffold the directories where the JSON data sets are expected to be found.
+	 *
 	 * @param string $test_method The test case method, usually passed by PHPUnit, if specified and if a data-sets
 	 * @param string $test_method The test case method, usually passed by PHPUnit, if specified and if a data-sets
 	 *                            sub-dir dedicated to the case exists, then data-sets will be loaded from that.
