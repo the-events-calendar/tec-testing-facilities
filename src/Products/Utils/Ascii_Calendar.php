@@ -59,6 +59,7 @@ class Ascii_Calendar {
 
 	/**
 	 * The horizontal width of each calendar cell.
+	 *
 	 * @var int
 	 */
 	protected $cell_width = 5;
@@ -66,17 +67,24 @@ class Ascii_Calendar {
 	/**
 	 * Ascii_Calendar constructor.
 	 *
-	 * @param       $start_day
-	 * @param       $end_day
-	 * @param array $events_by_day
-	 * @param int   $week_size
+	 * @param       int|string|\DateTimeInterface     $start_day The calendar start day.
+	 * @param       int|string|\DateTimeInterface     $end_day The calendar end day.
+	 * @param array<string,array<int|\WP_Post>> $events_by_day A map of each calendar day and events, missing days
+	 *                                                         will be filled.
+	 * @param int                               $week_size The week size, at minimum `1`; this canbe any value.
+	 *
+	 * @throws \InvalidArgumentException If a passed argument does not pass the sanity check.
 	 */
 	public function __construct( $start_day, $end_day, array $events_by_day = [], $week_size = 7 ) {
-		if ( false === $this->start_day = Dates::build_date_object( $start_day ) ) {
+		$this->start_day = Dates::build_date_object( $start_day );
+
+		if ( false === $this->start_day ) {
 			throw new \InvalidArgumentException( 'Start day is not valid.' );
 		}
 
-		if ( false === $this->end_day = Dates::build_date_object( $end_day ) ) {
+		$this->end_day = Dates::build_date_object( $end_day );
+
+		if ( false === $this->end_day ) {
 			throw new \InvalidArgumentException( 'Start day is not valid.' );
 		}
 
@@ -86,16 +94,18 @@ class Ascii_Calendar {
 		$period_end->add( $one_day );
 		$period         = new \DatePeriod( $this->start_day, $one_day, $period_end );
 		$all_empty_days = [];
-		/** @var \DateTime $day */
+
 		foreach ( $period as $day ) {
 			$all_empty_days[ $day->format( 'Y-m-d' ) ] = [];
 		}
 
 		$this->events_by_day = array_merge( $all_empty_days, $events_by_day );
 
-		if ( ( $this->week_size = absint( $week_size ) ) < 1 ) {
+		if ( $week_size < 1 ) {
 			throw new \InvalidArgumentException( 'Week size should be an integer value gt 1.' );
 		}
+
+		$this->week_size = (int) $week_size
 	}
 
 	/**
@@ -189,7 +199,7 @@ class Ascii_Calendar {
 		$vertically_sorted_week = $this->vertically_sort_events( $raw_week, $week_positions, $week_height );
 		$padded_sorted_weeks    = $this->pad_weeks( $vertically_sorted_week, $week_height );
 
-		$result_header = str_repeat( '______', count( $raw_week ) );
+		$result_header  = str_repeat( '______', count( $raw_week ) );
 		$result_header .= "\n" . implode( '|', array_map( [ $this, 'fit' ], array_keys( $raw_week ) ) );
 		$result_header .= "\n" . str_repeat( '------', count( $raw_week ) );
 
@@ -219,12 +229,15 @@ class Ascii_Calendar {
 	protected function build_week_positions( array $raw_week ) {
 		$week_positions = [];
 
-		array_walk( $raw_week, static function ( $week_line ) use ( &$week_positions ) {
-			// Flip to have an ID to Vertical Position in Week map, we assume events are already sorted in the day.
-			$new_positions = array_flip( $week_line );
-			// Any previously set position stand, add the new ones for events we've never seen.
-			$week_positions = array_replace( $new_positions, $week_positions );
-		} );
+		array_walk(
+			$raw_week,
+			static function ( $week_line ) use ( &$week_positions ) {
+				// Flip to have an ID to Vertical Position in Week map, we assume events are already sorted in the day.
+				$new_positions = array_flip( $week_line );
+				// Any previously set position stand, add the new ones for events we've never seen.
+				$week_positions = array_replace( $new_positions, $week_positions );
+			}
+		);
 
 		return $week_positions;
 	}
@@ -244,12 +257,15 @@ class Ascii_Calendar {
 	 * @return array<string,array> A map of each week day (`Y-m-d` format) to its vertically ordered events IDs.
 	 */
 	protected function vertically_sort_events( array $raw_week, array $week_positions, $week_height ) {
-		array_walk( $raw_week, static function ( &$week_line ) use ( $week_positions, $week_height ) {
-			$empty_day_column = array_fill( 0, $week_height, ' ' );
-			$the_day_ids      = array_intersect_key( $week_positions, array_flip( $week_line ) );
-			$week_line        = array_replace( $empty_day_column, array_flip( $the_day_ids ) );
-			ksort( $week_line );
-		} );
+		array_walk(
+			$raw_week,
+			static function ( &$week_line ) use ( $week_positions, $week_height ) {
+				$empty_day_column = array_fill( 0, $week_height, ' ' );
+				$the_day_ids      = array_intersect_key( $week_positions, array_flip( $week_line ) );
+				$week_line        = array_replace( $empty_day_column, array_flip( $the_day_ids ) );
+				ksort( $week_line );
+			}
+		);
 
 		return $raw_week;
 	}
