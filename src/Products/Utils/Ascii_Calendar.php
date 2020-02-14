@@ -105,7 +105,7 @@ class Ascii_Calendar {
 			throw new \InvalidArgumentException( 'Week size should be an integer value gt 1.' );
 		}
 
-		$this->week_size = (int) $week_size
+		$this->week_size = (int) $week_size;
 	}
 
 	/**
