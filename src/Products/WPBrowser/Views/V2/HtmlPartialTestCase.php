@@ -59,7 +59,11 @@ class HtmlPartialTestCase extends WPTestCase {
 
 		// Before each test make sure to empty the whole uploads directory to avoid file enumeration issues.
 		$uploads = wp_upload_dir();
-		rrmdir( $uploads['basedir'] );
+		if ( function_exists( '\tad\WPBrowser\rrmdir' ) ) {
+			tad\WPBrowser\rrmdir( $uploads['basedir'] );
+		} else {
+			rrmdir( $uploads['basedir'] );
+		}
 
 		/*
 		 * To make sure we're not breaking snapshots by a change in the local URL generating them change the `home_url`
