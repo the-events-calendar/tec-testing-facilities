@@ -60,7 +60,7 @@ class HtmlPartialTestCase extends WPTestCase {
 		// Before each test make sure to empty the whole uploads directory to avoid file enumeration issues.
 		$uploads = wp_upload_dir();
 		if ( function_exists( '\tad\WPBrowser\rrmdir' ) ) {
-			tad\WPBrowser\rrmdir( $uploads['basedir'] );
+			\tad\WPBrowser\rrmdir( $uploads['basedir'] );
 		} else {
 			rrmdir( $uploads['basedir'] );
 		}
