@@ -9,10 +9,10 @@
 namespace Tribe\Test\Products\WPBrowser\Views\V2;
 
 use tad\FunctionMocker\FunctionMocker as Test;
+use Tribe\Events\Views\V2\Template\Settings\Advanced_Display;
 use Tribe\Test\PHPUnit\Traits\With_Post_Remapping;
 use Tribe\Test\Products\Traits\With_Context;
 use Tribe\Test\Products\Traits\With_Event_Data_Fetching;
-use Tribe\Test\Products\Traits\With_View_Context;
 use Tribe__Context as Context;
 
 /**
@@ -63,13 +63,8 @@ class ViewTestCase extends TestCase {
 	public function setUp() {
 		parent::setUp();
 
-		$this->reset_context();
-
 		// Start Function Mocker.
 		Test::setUp();
-
-		// Restore the context to its initial state.
-		$this->reset_context();
 
 		// phpcs:ignore
 		$this->today_date = date( 'Y-m-d' );
@@ -111,8 +106,24 @@ class ViewTestCase extends TestCase {
 		$this->date_dependent_template_vars = [];
 		add_filter( 'tribe_events_views_v2_view_template_vars', [ $this, 'collect_date_dependent_values' ] );
 
-		// Refresh the global Contex to start fresh on each test run.
-		tribe_context()->refresh();
+		// Ensure the before and after event HTML is reset.
+		tribe_update_option( Advanced_Display::$key_before_events_html, '' );
+		tribe_update_option( Advanced_Display::$key_after_events_html, '' );
+
+		// Ensure earliest and latest date, related to the creation of events, are reset.
+		tribe_update_option( 'earliest_date', '' );
+		tribe_update_option( 'latest_date', '' );
+
+		// Backup the context if not already done.
+		if ( ! $this->context_backed_up() ) {
+			$this->backup_context([
+				'latest_event_date' => null,
+				'earliest_event_date' => null,
+			]);
+		}
+
+		// Restore the context to its initial state.
+		$this->restore_context();
 	}
 
 	/**
