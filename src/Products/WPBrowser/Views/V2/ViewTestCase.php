@@ -116,10 +116,12 @@ class ViewTestCase extends TestCase {
 
 		// Backup the context if not already done.
 		if ( ! $this->context_backed_up() ) {
-			$this->backup_context([
-				'latest_event_date' => null,
-				'earliest_event_date' => null,
-			]);
+			$this->backup_context(
+				[
+					'latest_event_date'   => null,
+					'earliest_event_date' => null,
+				]
+			);
 		}
 
 		// Restore the context to its initial state.

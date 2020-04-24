@@ -52,7 +52,7 @@ trait With_Context {
 	 * @see   With_Context::reset_context For the method that will restore the context to an empty, new instance.
 	 */
 	protected function restore_context( Context $context = null ) {
-		$restore_to = $context ?: static::$context_backup;
+		$restore_to = $context ? $context : static::$context_backup;
 
 		if ( ! $restore_to instanceof Context ) {
 			// It might not have been backed up or not be a Context object.
@@ -68,14 +68,14 @@ trait With_Context {
 	 * "Current" is the keyword here: if the Context has been altered BEFORE this method runs, then the instance
 	 * of the Context that will be restored with the `restore_context` method will be this altered one.
 	 *
-	 * @param array<string,mixed> An array of alterations that will be applied to the context before it's backed up.
-	 *                            This allows setting the Context to a desired state that will be enforced on restore.
+	 * @param array<string,mixed> $alterations An array of alterations that will be applied to the context before it's
+	 *                                         backed up. This allows setting the Context to a desired state that will
+	 *                                         be enforced on restore.
 	 *
 	 * @since TBD
 	 */
 	protected function backup_context( array $alterations = null ) {
 		if ( tribe()->isBound( 'context' ) ) {
-			/** @var Context $context */
 			$context = tribe( 'context' );
 			if ( null !== $alterations ) {
 				$context = $context->alter( $alterations );
