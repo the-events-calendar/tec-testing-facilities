@@ -21,6 +21,14 @@ use Tribe__Context as Context;
 trait With_Context {
 
 	/**
+	 * A backup of the context in its initial state, taken at the start of the test case `setUp` method.
+	 * This is static to "snapshot" the context once, when the first test case of this type runs.
+	 *
+	 * @var Context
+	 */
+	protected static $context_backup;
+
+	/**
 	 * Resets the global, shared instance of the Context to a new, blank, empty instance.
 	 *
 	 * @since TBD

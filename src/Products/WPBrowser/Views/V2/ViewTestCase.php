@@ -49,14 +49,6 @@ class ViewTestCase extends TestCase {
 	protected $today_date;
 
 	/**
-	 * A backup of the context in its initial state, taken at the start of the test case `setUp` method.
-	 * This is static to "snapshot" the context once, when the first test case of this type runs.
-	 *
-	 * @var Context
-	 */
-	protected static $context_backup;
-
-	/**
 	 * Sets up the View test context mocking some commonly used functions and setting up the code to filter some time,
 	 * or date, dependant values to keep the snapshots consistent across time.
 	 */
@@ -109,23 +101,6 @@ class ViewTestCase extends TestCase {
 		// Ensure the before and after event HTML is reset.
 		tribe_update_option( Advanced_Display::$key_before_events_html, '' );
 		tribe_update_option( Advanced_Display::$key_after_events_html, '' );
-
-		// Ensure earliest and latest date, related to the creation of events, are reset.
-		tribe_update_option( 'earliest_date', '' );
-		tribe_update_option( 'latest_date', '' );
-
-		// Backup the context if not already done.
-		if ( ! $this->context_backed_up() ) {
-			$this->backup_context(
-				[
-					'latest_event_date'   => null,
-					'earliest_event_date' => null,
-				]
-			);
-		}
-
-		// Restore the context to its initial state.
-		$this->restore_context();
 	}
 
 	/**
