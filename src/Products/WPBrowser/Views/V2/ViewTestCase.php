@@ -10,7 +10,10 @@ namespace Tribe\Test\Products\WPBrowser\Views\V2;
 
 use tad\FunctionMocker\FunctionMocker as Test;
 use Tribe\Test\PHPUnit\Traits\With_Post_Remapping;
+use Tribe\Test\Products\Traits\With_Context;
 use Tribe\Test\Products\Traits\With_Event_Data_Fetching;
+use Tribe\Test\Products\Traits\With_View_Context;
+use Tribe__Context as Context;
 
 /**
  * Class ViewTestCase
@@ -21,6 +24,7 @@ class ViewTestCase extends TestCase {
 
 	use With_Post_Remapping;
 	use With_Event_Data_Fetching;
+	use With_Context;
 
 	/**
 	 * In the `reset_post_dates` methods all date-related post fields will be set to this value.
@@ -45,14 +49,27 @@ class ViewTestCase extends TestCase {
 	protected $today_date;
 
 	/**
+	 * A backup of the context in its initial state, taken at the start of the test case `setUp` method.
+	 * This is static to "snapshot" the context once, when the first test case of this type runs.
+	 *
+	 * @var Context
+	 */
+	protected static $context_backup;
+
+	/**
 	 * Sets up the View test context mocking some commonly used functions and setting up the code to filter some time,
 	 * or date, dependant values to keep the snapshots consistent across time.
 	 */
 	public function setUp() {
 		parent::setUp();
 
+		$this->reset_context();
+
 		// Start Function Mocker.
 		Test::setUp();
+
+		// Restore the context to its initial state.
+		$this->reset_context();
 
 		// phpcs:ignore
 		$this->today_date = date( 'Y-m-d' );
