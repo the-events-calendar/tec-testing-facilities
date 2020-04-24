@@ -68,11 +68,30 @@ trait With_Context {
 	 * "Current" is the keyword here: if the Context has been altered BEFORE this method runs, then the instance
 	 * of the Context that will be restored with the `restore_context` method will be this altered one.
 	 *
+	 * @param array<string,mixed> An array of alterations that will be applied to the context before it's backed up.
+	 *                            This allows setting the Context to a desired state that will be enforced on restore.
+	 *
 	 * @since TBD
 	 */
-	protected function backup_context() {
+	protected function backup_context( array $alterations = null ) {
 		if ( tribe()->isBound( 'context' ) ) {
-			static::$context_backup = tribe( 'context' );
+			/** @var Context $context */
+			$context = tribe( 'context' );
+			if ( null !== $alterations ) {
+				$context = $context->alter( $alterations );
+			}
+			static::$context_backup = $context;
 		}
+	}
+
+	/**
+	 * Checks whether the Context is backed up or not.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool Whether the Context is backed up or not.
+	 */
+	protected function context_backed_up() {
+		return static::$context_backup instanceof Context;
 	}
 }
