@@ -125,19 +125,6 @@ abstract class TestCase extends WPTestCase {
 		// Ensure earliest and latest date, related to the creation of events, are reset.
 		tribe_update_option( 'earliest_date', '' );
 		tribe_update_option( 'latest_date', '' );
-
-		// Backup the context if not already done.
-		if ( ! $this->context_backed_up() ) {
-			$this->backup_context(
-				[
-					'latest_event_date'   => null,
-					'earliest_event_date' => null,
-				]
-			);
-		}
-
-		// Restore the context to its initial state.
-		$this->restore_context();
 	}
 
 	/**
