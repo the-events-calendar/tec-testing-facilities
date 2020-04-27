@@ -247,7 +247,7 @@ class ViewTestCase extends TestCase {
 				$reflection_property->setAccessible( false );
 			} catch ( \ReflectionException $e ) {
 				$message = sprintf(
-					'Error while trying to reset % property in ViewTestCase: %s',
+					'Error while trying to reset %s property in ViewTestCase: %s',
 					'Tribe__Events__Main::show_data_wrapper',
 					$e->getMessage()
 				);
