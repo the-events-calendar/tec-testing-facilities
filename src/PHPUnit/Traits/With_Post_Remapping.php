@@ -390,4 +390,28 @@ trait With_Post_Remapping {
 		$array_intersect_key = array_intersect_key( (array) $post, array_combine( $post_fields, $post_fields ) );
 		$wpdb->insert( $wpdb->posts, $array_intersect_key );
 	}
+
+	/**
+	 * Remaps a set of real post IDs to a set of mock/fake post IDs.
+	 *
+	 * This method is useful when real posts are required in the database, say to satisfy a query, but fake post and
+	 * post meta data is required for the purpose of snapshot testing.
+	 * In this instances create the real, test, posts using factories and, then, remap them to snapshot-ready mock posts
+	 * after this.
+	 *
+	 * @param array<int> $original_ids The set of original post IDs.
+	 * @param array<int> $mock_ids     The set of mock post IDs.
+	 *
+	 * @throws \InvalidArgumentException If the count of the two arrays does not match.
+	 */
+	protected function remap_post_ids( array $original_ids, array $mock_ids ) {
+		if ( count( $original_ids ) !== count( $mock_ids ) ) {
+			throw new \InvalidArgumentException( 'The number of elements in the two arrays must match.' );
+		}
+
+		foreach ( array_combine( $original_ids, $mock_ids ) as $from => $to ) {
+			wp_cache_set( $from, wp_cache_get( $to, 'posts' ), 'posts' );
+			wp_cache_set( $from, wp_cache_get( $to, 'post_meta' ), 'post_meta' );
+		}
+	}
 }
