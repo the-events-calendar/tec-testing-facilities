@@ -215,6 +215,9 @@ class ViewTestCase extends TestCase {
 	 *
 	 * The data is, normally, printed once per request, but this works against tests that are, from WordPress
 	 * perspective one long, single, request.
+	 *
+	 * @throws \RuntimeException If there's a problem reflecting on The Events Calendar Main class or setting the
+	 *                           property value.
 	 */
 	protected function reset_before_after_html_data() {
 		// Let's start by ensuring we're not adding any value to the before/after HTML using the option.
@@ -234,11 +237,20 @@ class ViewTestCase extends TestCase {
 			try {
 				$reflection_property = new \ReflectionProperty( $main, 'show_data_wrapper' );
 				$reflection_property->setAccessible( true );
-				$reflection_property->setValue( $main, [ 'before' => true, 'after' => true ] );
+				$reflection_property->setValue(
+					$main,
+					[
+						'before' => true,
+						'after'  => true,
+					]
+				);
 				$reflection_property->setAccessible( false );
 			} catch ( \ReflectionException $e ) {
-				$message = 'Error while trying to reset Tribe__Events__Main::show_data_wrapper property ' .
-				           'in ViewTestCase: ' . $e->getMessage();
+				$message = sprintf(
+					'Error while trying to reset % property in ViewTestCase: %s',
+					'Tribe__Events__Main::show_data_wrapper',
+					$e->getMessage()
+				);
 				throw new \RuntimeException( $message );
 			}
 		}
