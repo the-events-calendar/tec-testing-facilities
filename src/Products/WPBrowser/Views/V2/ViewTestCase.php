@@ -102,9 +102,14 @@ class ViewTestCase extends TestCase {
 		 * previously cached to new events. This reset will ensure that's not the case.
 		 */
 		tribe_set_var( 'tribe_events_event_schedule_details', [] );
+		tribe_set_var( 'tribe_get_start_date', [] );
+		tribe_set_var( 'tribe_get_end_date', [] );
+
+		// Ensure cached URLs are cleaned.
+		tribe( 'events.rewrite' )->reset_caches();
+		tribe( 'events.rewrite' )->setup();
 
 		$this->reset_before_after_html_data();
-
 	}
 
 	/**
