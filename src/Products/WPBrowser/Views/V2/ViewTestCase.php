@@ -97,6 +97,12 @@ class ViewTestCase extends TestCase {
 		$this->date_dependent_template_vars = [];
 		add_filter( 'tribe_events_views_v2_view_template_vars', [ $this, 'collect_date_dependent_values' ] );
 
+		/*
+		 * During tests events created by diff. tests might have the same ID: this will apply date details settings
+		 * previously cached to new events. This reset will ensure that's not the case.
+		 */
+		tribe_set_var( 'tribe_events_event_schedule_details', [] );
+
 		$this->reset_before_after_html_data();
 
 	}
