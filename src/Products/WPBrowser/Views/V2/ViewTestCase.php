@@ -13,7 +13,6 @@ use Tribe\Events\Views\V2\Template\Settings\Advanced_Display;
 use Tribe\Test\PHPUnit\Traits\With_Post_Remapping;
 use Tribe\Test\Products\Traits\With_Context;
 use Tribe\Test\Products\Traits\With_Event_Data_Fetching;
-use Tribe__Context as Context;
 
 /**
  * Class ViewTestCase
@@ -98,9 +97,8 @@ class ViewTestCase extends TestCase {
 		$this->date_dependent_template_vars = [];
 		add_filter( 'tribe_events_views_v2_view_template_vars', [ $this, 'collect_date_dependent_values' ] );
 
-		// Ensure the before and after event HTML is reset.
-		tribe_update_option( Advanced_Display::$key_before_events_html, '' );
-		tribe_update_option( Advanced_Display::$key_after_events_html, '' );
+		$this->reset_before_after_html_data();
+
 	}
 
 	/**
@@ -210,5 +208,39 @@ class ViewTestCase extends TestCase {
 		);
 
 		return $template_vars;
+	}
+
+	/**
+	 * This method ensures that before/after HTML data is correctly printed for each test.
+	 *
+	 * The data is, normally, printed once per request, but this works against tests that are, from WordPress
+	 * perspective one long, single, request.
+	 */
+	protected function reset_before_after_html_data() {
+		// Let's start by ensuring we're not adding any value to the before/after HTML using the option.
+		tribe_update_option( Advanced_Display::$key_before_events_html, '' );
+		tribe_update_option( Advanced_Display::$key_after_events_html, '' );
+
+		/*
+		 * The Events Calendar `Main::(before|after)_html_data_wrapper` will use a private property to know if it should
+		 * print the before and after data or not. This means the data is printed on the first test that will trigger
+		 * it and won't be printed for any later test. This creates differences in snapshots when generated alone (they
+		 * will have the before/after data) or when generated in the context of a whole suite run. Since the before
+		 * and after HTML is indeed part of the code we want to test in snapshots, here we use reflection to reset the
+		 * (private) property so that the before/after HTML data will be printed on each test.
+		 */
+		$main = tribe( 'tec.main' );
+		if ( property_exists( $main, 'show_data_wrapper' ) ) {
+			try {
+				$reflection_property = new \ReflectionProperty( $main, 'show_data_wrapper' );
+				$reflection_property->setAccessible( true );
+				$reflection_property->setValue( $main, [ 'before' => true, 'after' => true ] );
+				$reflection_property->setAccessible( false );
+			} catch ( \ReflectionException $e ) {
+				$message = 'Error while trying to reset Tribe__Events__Main::show_data_wrapper property ' .
+				           'in ViewTestCase: ' . $e->getMessage();
+				throw new \RuntimeException( $message );
+			}
+		}
 	}
 }
