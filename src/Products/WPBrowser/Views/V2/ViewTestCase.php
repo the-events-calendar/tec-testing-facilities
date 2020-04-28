@@ -109,6 +109,9 @@ class ViewTestCase extends TestCase {
 		tribe( 'events.rewrite' )->reset_caches();
 		tribe( 'events.rewrite' )->setup();
 
+		// Reset the JSON-LD cached data.
+		tribe_cache()['json-ld-data'] = [];
+
 		$this->reset_before_after_html_data();
 	}
 
