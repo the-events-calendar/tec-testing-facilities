@@ -20,7 +20,7 @@ trait With_Caches_Reset {
 	/**
 	 * Flushes all the caches used by our plugins.
 	 *
-	 * Due to the eterogenous nature of our caching methods, the method contains a curated list of caching locations,
+	 * Due to the heterogenous nature of our caching methods, the method contains a curated list of caching locations,
 	 * methodologies and applications.
 	 */
 	protected function flush_all_caches() {
