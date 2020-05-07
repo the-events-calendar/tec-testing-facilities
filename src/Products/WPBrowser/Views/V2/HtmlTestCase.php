@@ -13,6 +13,7 @@ use DOMWrap\Document;
 use Tribe\Events\Views\V2\Template;
 use Tribe\Events\Views\V2\View;
 use Tribe\Events\Views\V2\View_Interface;
+use Tribe\Test\Products\Traits\With_Caches_Reset;
 
 /**
  * Class TestCase
@@ -20,6 +21,9 @@ use Tribe\Events\Views\V2\View_Interface;
  * @package Tribe\Test\Products\WPBrowser\Views\V2;
  */
 abstract class HtmlTestCase extends TestCase {
+	use With_Caches_Reset;
+	use With_Context;
+
 	/**
 	 * Store the views loader
 	 *
@@ -83,6 +87,17 @@ abstract class HtmlTestCase extends TestCase {
 				return str_replace( [ $home_url, date( 'Y/m' ) ], [ 'http://test.tri.be', '2018/08' ], $url );
 			}
 		);
+
+		$this->backup_context();
+		$this->flush_all_caches();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function tearDown() {
+		$this->restore_context();
+		parent::tearDown();
 	}
 
 	/**

@@ -16,6 +16,7 @@ use Tribe\Events\Test\Factories\Event;
 use Tribe\Events\Test\Factories\Organizer;
 use Tribe\Events\Test\Factories\Venue;
 use Tribe\Events\Views\V2\View_Interface;
+use Tribe\Test\Products\Traits\With_Caches_Reset;
 use Tribe\Test\Products\Traits\With_Context;
 use Tribe__Context as Context;
 
@@ -28,6 +29,7 @@ abstract class TestCase extends WPTestCase {
 
 	use MatchesSnapshots;
 	use With_Context;
+	use With_Caches_Reset;
 
 	/**
 	 * The current Context Mocker instance.
@@ -44,33 +46,13 @@ abstract class TestCase extends WPTestCase {
 	protected $driver;
 
 	/**
-	 * The state of the global Context object before the test method ran.
-	 *
-	 * @var array
-	 */
-	protected $global_context_before_test;
-
-	/**
 	 * After the test method ran try and restore the global context to its previous state and make sure that
 	 * is the case.
 	 *
 	 * @since 4.9.2
 	 */
 	public function tearDown() {
-		// Get the values we had before the test method.
-		$reset_values = (array) $this->global_context_before_test;
-		// Get the values we have now.
-		$locations = tribe_context()->get_locations();
-		// Reset any value we had before to its previous value, set any other value to `NOT_FOUND`.
-		$reset_values = array_merge(
-			array_combine(
-				array_keys( $locations ),
-				array_fill( 0, count( $locations ), Context::NOT_FOUND )
-			),
-			$reset_values
-		);
-		// Reset to the values.
-		tribe_context()->alter( $reset_values )->dangerously_set_global_context();
+		$this->restore_context();
 
 		parent::tearDown();
 	}
@@ -83,9 +65,11 @@ abstract class TestCase extends WPTestCase {
 	 */
 	public function setUp() {
 		parent::setUp();
+
+		$this->backup_context();
+
 		// Always set the `is_main_query` value to `false` to have a clean starting fixture.
 		tribe_context()->alter( [ 'is_main_query' => false ] )->dangerously_set_global_context( [ 'is_main_query' ] );
-		$this->global_context_before_test = tribe_context()->to_array();
 
 		/*
 		 * Filter the `home_url` to make sure URLs printed on the page are consistent across environments.
@@ -111,9 +95,6 @@ abstract class TestCase extends WPTestCase {
 			}
 		);
 
-		// Let's make sure there are no left-over events between tests.
-		tribe_events()->delete();
-
 		/*
 		 * Set up the event, venue and organizer factories to make them available in the tests on the `static::factory`
 		 * method.
@@ -122,9 +103,7 @@ abstract class TestCase extends WPTestCase {
 		static::factory()->venue     = new Venue();
 		static::factory()->organizer = new Organizer();
 
-		// Ensure earliest and latest date, related to the creation of events, are reset.
-		tribe_update_option( 'earliest_date', '' );
-		tribe_update_option( 'latest_date', '' );
+		$this->flush_all_caches();
 	}
 
 	/**

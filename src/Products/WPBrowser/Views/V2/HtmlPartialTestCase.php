@@ -13,6 +13,8 @@ use Spatie\Snapshots\MatchesSnapshots;
 use Tribe\Events\Views\V2\Template;
 use Tribe\Events\Views\V2\View;
 use Tribe\Events\Views\V2\Views\Reflector_View;
+use Tribe\Test\Products\Traits\With_Caches_Reset;
+use Tribe\Test\Products\Traits\With_Context;
 
 /**
  * Class HtmlPartialTestCase
@@ -21,6 +23,8 @@ use Tribe\Events\Views\V2\Views\Reflector_View;
  */
 class HtmlPartialTestCase extends WPTestCase {
 	use MatchesSnapshots;
+	use With_Caches_Reset;
+	use With_Context;
 
 	/**
 	 * The path, relative to the Views v2 views root folder, to the partial.
@@ -81,6 +85,17 @@ class HtmlPartialTestCase extends WPTestCase {
 				return str_replace( [ $home_url, date( 'Y/m' ) ], [ 'http://test.tri.be', '2018/08' ], $url );
 			}
 		);
+
+		$this->backup_context();
+		$this->flush_all_caches();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function tearDown() {
+		$this->restore_context();
+		parent::tearDown();
 	}
 
 	/**
