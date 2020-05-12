@@ -54,7 +54,7 @@ class PartialTestCase extends WPTestCase {
 		}
 
 		if ( preg_match( '/\\.php$/', $this->partial_path ) ) {
-			throw new \RuntimeException( 'The `$partial_path` property should not contain the `.php` extension.' );
+			throw new \RuntimeException( 'The `$partial_path` property must not contain the `.php` extension.' );
 		}
 
 		$view           = View::make( Reflector_View::class );
