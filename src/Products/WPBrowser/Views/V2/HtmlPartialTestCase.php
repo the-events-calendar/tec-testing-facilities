@@ -22,7 +22,6 @@ use Tribe\Test\Products\Traits\With_Context;
  * @package Tribe\Test\Products\WPBrowser\Views\V2
  */
 class HtmlPartialTestCase extends WPTestCase {
-	use MatchesSnapshots;
 	use With_Caches_Reset;
 	use With_Context;
 
