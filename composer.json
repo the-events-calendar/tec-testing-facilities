@@ -40,7 +40,7 @@
         "wordpress/wordpress": "dev-master",
         "phpunit/phpunit": "^6.0",
         "codeception/codeception": "^3.0",
-		"vlucas/phpdotenv": "^3.0"
+        "vlucas/phpdotenv": "^3.0"
     },
     "scripts": {
         "code-sniff": "vendor/bin/phpcs --standard=./cs-ruleset.xml -s src",
