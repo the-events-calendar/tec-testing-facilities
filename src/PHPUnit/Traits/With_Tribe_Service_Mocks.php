@@ -66,9 +66,6 @@ trait With_Tribe_Service_Mocks {
 		// Run the method, the specified services will be replaced.
 		try {
 			$do();
-		} catch ( \Exception $e ) {
-			// Then throw.
-			throw $e;
 		} finally {
 			// Restore the service locator original instance.
 			setPrivateProperties( tribe(), [ 'instance' => $locator_instance ] );
