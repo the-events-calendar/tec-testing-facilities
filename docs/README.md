@@ -26,3 +26,4 @@ Here's a list of what's included in the library.
     * Traits
         * [With_Post_Remapping](PHPUnit/Traits/With_Post_Remapping.md)
         * [With_Filter_Manipulation](PHPUnit/Traits/With_Filter_Manipulation.md)
+        * [With_Tribe_Service_Mocks](PHPUnit/Traits/With_Tribe_Service_Mocks.md)
