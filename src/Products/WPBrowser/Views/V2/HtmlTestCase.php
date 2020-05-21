@@ -14,6 +14,7 @@ use Tribe\Events\Views\V2\Template;
 use Tribe\Events\Views\V2\View;
 use Tribe\Events\Views\V2\View_Interface;
 use Tribe\Test\Products\Traits\With_Caches_Reset;
+use Tribe\Test\Products\Traits\With_Context;
 
 /**
  * Class TestCase
