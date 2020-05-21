@@ -18,7 +18,6 @@ use Tribe\Events\Test\Factories\Venue;
 use Tribe\Events\Views\V2\View_Interface;
 use Tribe\Test\Products\Traits\With_Caches_Reset;
 use Tribe\Test\Products\Traits\With_Context;
-use Tribe__Context as Context;
 
 /**
  * Class TestCase
