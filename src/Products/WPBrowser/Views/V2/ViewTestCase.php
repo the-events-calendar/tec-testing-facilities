@@ -96,9 +96,30 @@ class ViewTestCase extends TestCase {
 		add_filter( 'tribe_events_pro_recurrence_small_batch_size', $return_int_max );
 		add_filter( 'tribe_events_pro_recurrence_batch_size', $return_int_max );
 
+		$this->start_checking_template_vars();
+	}
+
+	/**
+	 * Start filtering the Views template vars to ensure none of the variables contains today's date.
+	 *
+	 * If a View template variable contains today's date, then it's a sign that it's not correctly mocked.
+	 */
+	protected function start_checking_template_vars() {
 		$this->date_dependent_template_vars = [];
 		add_filter( 'tribe_events_views_v2_view_template_vars', [ $this, 'collect_date_dependent_values' ] );
 	}
+
+	/**
+	 * Suspend, either until the next test or until a call to the `start_checking_template_vars` method, the
+	 * check on Views template variables to ensure none contains today's date.
+	 *
+	 * @param string $reason The reason why the check is being suspended. This message is not used in the code,
+	 *                       but is meant to force developers to explain themselves when suspending this check.
+	 */
+	protected function suspend_template_vars_check( $reason ) {
+		remove_filter( 'tribe_events_views_v2_view_template_vars', [ $this, 'collect_date_dependent_values' ] );
+	}
+
 
 	/**
 	 * Sets the date/time-dependant fields of a post to a fixed value.
