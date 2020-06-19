@@ -103,6 +103,9 @@ abstract class TestCase extends WPTestCase {
 		static::factory()->organizer = new Organizer();
 
 		$this->flush_all_caches();
+
+		// Let's restore this value to avoid hijacking all Views.
+		$_SERVER['REQUEST_URI'] = '';
 	}
 
 	/**
