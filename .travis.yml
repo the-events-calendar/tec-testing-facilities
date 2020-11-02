@@ -6,6 +6,8 @@ services:
   - mysql
 
 before_install:
+  # Install version 1 of Composer.
+  - composer self-update --rollback
   - mysql -e 'CREATE DATABASE IF NOT EXISTS test;'
 
 install:
