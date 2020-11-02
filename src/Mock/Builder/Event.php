@@ -312,7 +312,7 @@ class Event {
 	 */
 	protected function update_post_meta( $meta_key, $meta_value ) {
 		$all_meta              = get_post_meta( $this->event->ID );
-		$all_meta[ $meta_key ] = [ $meta_value ];
+		$all_meta[ $meta_key ] = (array) $meta_value;
 		wp_cache_set( $this->event->ID, $all_meta, 'post_meta' );
 	}
 
