@@ -61,7 +61,7 @@ abstract class HtmlTestCase extends TestCase {
 
 		// Before each test make sure to empty the whole uploads directory to avoid file enumeration issues.
 		$uploads = wp_upload_dir();
-		if ( function_exists( '\tad\WPBrowser\rrmdir' ) ) {
+		if ( function_exists( '\tad\WPBrowser\rrmdir' ) && is_dir( $uploads['basedir'] ) ) {
 			\tad\WPBrowser\rrmdir( $uploads['basedir'] );
 		} else {
 			rrmdir( $uploads['basedir'] );
