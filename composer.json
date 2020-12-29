@@ -1,12 +1,12 @@
 {
-    "name": "moderntribe/tribe-testing-facilities",
+    "name": "the-events-calendar/tribe-testing-facilities",
     "description": "Testing facilities, helpers and examples.",
     "type": "library",
     "license": "GPL-3.0+",
     "authors": [
         {
-            "name": "Modern Tribe",
-            "email": "tribe@tri.be"
+            "name": "The Events Calendar",
+            "email": "vendors@theeventscalendar.com"
         }
     ],
     "autoload": {
