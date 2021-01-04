@@ -13,9 +13,9 @@ Since this package is not on Packagist you'll need to define the package in your
 ```json
 "repositories": [
 		{
-		  "name": "moderntribe/tribe-testing-facilities",
+		  "name": "the-events-calendar/tribe-testing-facilities",
 		  "type": "github",
-		  "url": "https://github.com/moderntribe/tribe-testing-facilities",
+		  "url": "https://github.com/the-events-calendar/tribe-testing-facilities",
 		  "no-api": true
 		}
 ],
