@@ -1,4 +1,4 @@
-# Modern Tribe testing facilities
+# The Events Calendar testing facilities
 
 A set of testing helpers, add-ons and gimmicks to make Modern Tribe Products and Agency testing easier.  
 
@@ -13,9 +13,9 @@ Since this package is not on Packagist you'll need to define the package in your
 ```json
 "repositories": [
 		{
-		  "name": "moderntribe/tribe-testing-facilities",
+		  "name": "the-events-calendar/tec-testing-facilities",
 		  "type": "github",
-		  "url": "https://github.com/moderntribe/tribe-testing-facilities",
+		  "url": "https://github.com/the-events-calendar/tec-testing-facilities",
 		  "no-api": true
 		}
 ],
@@ -24,7 +24,7 @@ Since this package is not on Packagist you'll need to define the package in your
 You'll now be able to pull in the library with the following command:
 
 ```bash
-composer require --dev moderntribe/tribe-testing-facilities:dev-master
+composer require --dev the-events-calendar/tec-testing-facilities:dev-master
 ```
 
 ## What's inside?
