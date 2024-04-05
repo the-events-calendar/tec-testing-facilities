@@ -50,7 +50,7 @@ abstract class TestCase extends WPTestCase {
 	 *
 	 * @since 4.9.2
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		$this->restore_context();
 
 		parent::tearDown();
@@ -62,7 +62,7 @@ abstract class TestCase extends WPTestCase {
 	 *
 	 * We do this here, before each test method, as `setupBeforeClass` would be too early.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->backup_context();

@@ -30,7 +30,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.4",
         "lucatume/wp-browser": "^2.0 || ^3.0",
         "nilportugues/sql-query-formatter": "^1.2"
     },

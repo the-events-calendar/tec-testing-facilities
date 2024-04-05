@@ -49,7 +49,7 @@ abstract class HtmlTestCase extends TestCase {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		$this->view     = $this->make_view_instance();
@@ -96,7 +96,7 @@ abstract class HtmlTestCase extends TestCase {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		$this->restore_context();
 		parent::tearDown();
 	}
