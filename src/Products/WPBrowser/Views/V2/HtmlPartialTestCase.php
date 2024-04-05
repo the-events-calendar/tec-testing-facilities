@@ -46,7 +46,7 @@ class HtmlPartialTestCase extends WPTestCase {
 	 *
 	 * @throws \RuntimeException If the extending test case is not defining a `$partial_path` property.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 		if ( empty( $this->partial_path ) ) {
 			throw new \RuntimeException( 'Any test case extending [' . __CLASS__ . '] must define the `$partial_path` property.' );
@@ -93,7 +93,7 @@ class HtmlPartialTestCase extends WPTestCase {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		$this->restore_context();
 		parent::tearDown();
 	}

@@ -53,7 +53,7 @@ class ViewTestCase extends TestCase {
 	 * Sets up the View test context mocking some commonly used functions and setting up the code to filter some time,
 	 * or date, dependant values to keep the snapshots consistent across time.
 	 */
-	public function setUp() {
+	public function setUp(): void {
 		parent::setUp();
 
 		// Start Function Mocker.
@@ -143,7 +143,7 @@ class ViewTestCase extends TestCase {
 	/**
 	 * Tears down the View test context having care to reset function mocks too.
 	 */
-	public function tearDown() {
+	public function tearDown(): void {
 		Test::tearDown();
 		parent::tearDown();
 	}
