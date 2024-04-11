@@ -19,17 +19,17 @@
       }
     },
     "require": {
-        "php": ">=7.4",
         "lucatume/wp-browser": "^2.0 || ^3.0",
-        "nilportugues/sql-query-formatter": "^1.2"
+        "nilportugues/sql-query-formatter": "^1.2",
+        "php": ">=7.4"
     },
     "require-dev": {
-        "wp-coding-standards/wpcs": "^2.1",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
-        "wordpress/wordpress": "dev-master",
-        "phpunit/phpunit": "^6.0",
         "codeception/codeception": "^3.0",
-        "vlucas/phpdotenv": "^3.0"
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.2",
+        "phpunit/phpunit": "^6.0",
+        "vlucas/phpdotenv": "^3.0",
+        "wordpress/wordpress": "dev-master",
+        "wp-coding-standards/wpcs": "^2.1"
     },
     "repositories": [
         {
