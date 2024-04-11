@@ -1,4 +1,4 @@
-# Modern Tribe Testing Facilities Documentations
+# The Events Calendar Testing Facilities Documentations
 
 Here's a list of what's included in the library.
 
