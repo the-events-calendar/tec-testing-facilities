@@ -76,7 +76,9 @@ class ViewTestCase extends TestCase {
 
                 $date_time = new \DateTime( $date, new \DateTimeZone( 'UTC' ) );
 
-                return $date_time->format( $format );
+                $formatted = $date_time->format( $format );
+
+                return $formatted;
             },
             true
         );
@@ -85,7 +87,9 @@ class ViewTestCase extends TestCase {
         $this->set_fn_return(
             'time',
             function () use ( $mock_date_value ) {
-                return ( new \DateTime( $mock_date_value, new \DateTimeZone( 'UTC' ) ) )->getTimestamp();
+                $time = ( new \DateTime( $mock_date_value, new \DateTimeZone( 'UTC' ) ) )->getTimestamp();
+
+                return $time;
             },
             true
         );
