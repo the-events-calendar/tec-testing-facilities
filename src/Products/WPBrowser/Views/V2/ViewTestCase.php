@@ -77,7 +77,8 @@ class ViewTestCase extends TestCase {
                 $date_time = new \DateTime( $date, new \DateTimeZone( 'UTC' ) );
 
                 return $date_time->format( $format );
-            }
+            },
+            true
         );
 
 		// Mock calls to the `time` function too to make sure "now" timestamp is a controlled value.
@@ -85,7 +86,8 @@ class ViewTestCase extends TestCase {
             'time',
             function () use ( $mock_date_value ) {
                 return ( new \DateTime( $mock_date_value, new \DateTimeZone( 'UTC' ) ) )->getTimestamp();
-            }
+            },
+            true
         );
 
 		// Always return the same value when creating nonces.
