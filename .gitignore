@@ -5,3 +5,4 @@ tests/*.suite.yml
 .php-server-pid
 phpd.log
 .idea
+*.DS_Store
