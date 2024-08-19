@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Modern Tribe Testing Facilities Coding Standards" namespace="Tribe\Test\CS\Standard">
+<ruleset name="TEC Testing Facilities Coding Standards" namespace="Tribe\Test\CS\Standard">
     <rule ref="WordPress-Core">
         <exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
         <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>

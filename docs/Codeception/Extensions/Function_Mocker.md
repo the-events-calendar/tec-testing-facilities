@@ -15,7 +15,7 @@ extensions:
             initFile: tests/_function-mocker-bootstrap.php
 ```
 
-You should have Function Mocker initialize only in specific suites: list them in the `suites` configuration parameter.  
+You should have Function Mocker initialize only in specific suites: list them in the `suites` configuration parameter.
 The  extension requires an initialization file, in charge of calling `FunctionMocker::init` with the correct parameters; below a plugin example configuration file:
 
 ```php

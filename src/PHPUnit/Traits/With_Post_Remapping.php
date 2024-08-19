@@ -8,6 +8,7 @@
 namespace Tribe\Test\PHPUnit\Traits;
 
 use Tribe\Test\Mock\Builder\Event;
+use function Tribe\Test\format_sql;
 
 /**
  * Trait With_Post_Remapping
@@ -89,8 +90,18 @@ trait With_Post_Remapping {
 	 */
 	protected function get_mock_event( $target, array $template_vars = null ) {
 		$remapped_id = $this->get_mock_thing( $target, $template_vars );
+		$mock_meta = get_post_meta( $remapped_id );
+		$mock_event = tribe_get_event( $remapped_id );
+		$current_meta = get_post_meta( $remapped_id );
 
-		return tribe_get_event( $remapped_id );
+		// Calls to `add_post_meta` or `update_post_meta` happens, the mock meta will be wiped: restore what is missing.
+		foreach ( array_diff_key( $mock_meta, $current_meta ) as $key => $values ) {
+			foreach ( $values as $value ) {
+				add_post_meta( $remapped_id, $key, $value );
+			}
+		}
+
+		return $mock_event;
 	}
 
 	/**
