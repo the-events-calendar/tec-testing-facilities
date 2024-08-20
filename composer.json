@@ -61,5 +61,14 @@
         "wp-server-stop": "bash bin/wp-server-stop.sh",
         "php-logs": "bash bin/php-logs.sh",
         "test": "vendor/bin/codecept run unit && vendor/bin/codecept run wpunit"
+    },
+    "config": {
+        "allow-plugins": {
+            "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "platform": {
+          "php": "7.4"
+        }
     }
 }

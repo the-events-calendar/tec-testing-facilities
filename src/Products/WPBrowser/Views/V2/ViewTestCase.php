@@ -2,18 +2,19 @@
 /**
  * The base test case to test a View in its full render.
  *
- * @since   TBD
+ * @since TBD
+ *
  * @package Tribe\Test\Products\WPBrowser\Views\V2
  */
 
 namespace Tribe\Test\Products\WPBrowser\Views\V2;
 
-use tad\FunctionMocker\FunctionMocker as Test;
 use Tribe\Events\Views\V2\Template\Settings\Advanced_Display;
 use Tribe\Test\PHPUnit\Traits\With_Post_Remapping;
 use Tribe\Test\Products\Traits\With_Caches_Reset;
 use Tribe\Test\Products\Traits\With_Context;
 use Tribe\Test\Products\Traits\With_Event_Data_Fetching;
+use Tribe\Test\Products\Traits\With_Uopz;
 
 /**
  * Class ViewTestCase
@@ -26,6 +27,7 @@ class ViewTestCase extends TestCase {
 	use With_Event_Data_Fetching;
 	use With_Context;
 	use With_Caches_Reset;
+    use With_Uopz;
 
 	/**
 	 * In the `reset_post_dates` methods all date-related post fields will be set to this value.
@@ -56,38 +58,44 @@ class ViewTestCase extends TestCase {
 	public function setUp() {
 		parent::setUp();
 
-		// Start Function Mocker.
-		Test::setUp();
-
 		// phpcs:ignore
 		$this->today_date = date( 'Y-m-d' );
 
+        // Mock the date value to be used in the tests.
+        $mock_date_value = $this->mock_date_value;
+
 		// Mock calls to the `date` function to return a fixed value when getting the current date.
-		Test::replace(
-			'date',
-			function ( $format, $date = null ) {
-				$date = $date ?? $this->mock_date_value;
+        $this->set_fn_return(
+            'date',
+            function ( $format, $date = null ) use ( $mock_date_value ) {
+                $date = $date ?? $mock_date_value;
 
-				if ( \Tribe__Date_Utils::is_timestamp( $date ) ) {
-					$date = '@' . $date;
-				}
+                if ( \Tribe__Date_Utils::is_timestamp( $date ) ) {
+                    $date = '@' . $date;
+                }
 
-				$date_time = new \DateTime( $date, new \DateTimeZone( 'UTC' ) );
+                $date_time = new \DateTime( $date, new \DateTimeZone( 'UTC' ) );
 
-				return $date_time->format( $format );
-			}
-		);
+                $formatted = $date_time->format( $format );
+
+                return $formatted;
+            },
+            true
+        );
 
 		// Mock calls to the `time` function too to make sure "now" timestamp is a controlled value.
-		Test::replace(
-			'time',
-			function () {
-				return ( new \DateTime( $this->mock_date_value, new \DateTimeZone( 'UTC' ) ) )->getTimestamp();
-			}
-		);
+        $this->set_fn_return(
+            'time',
+            function () use ( $mock_date_value ) {
+                $time = ( new \DateTime( $mock_date_value, new \DateTimeZone( 'UTC' ) ) )->getTimestamp();
+
+                return $time;
+            },
+            true
+        );
 
 		// Always return the same value when creating nonces.
-		Test::replace( 'wp_create_nonce', '2ab7cc6b39' );
+        $this->set_fn_return( 'wp_create_nonce', '2ab7cc6b39' );
 
 		// Let's make sure we can create as many recurring events as we want.
 		$return_int_max = static function () {
@@ -97,6 +105,13 @@ class ViewTestCase extends TestCase {
 		add_filter( 'tribe_events_pro_recurrence_batch_size', $return_int_max );
 
 		$this->start_checking_template_vars();
+	}
+
+	/**
+	 * Tears down the View test context having care to reset function mocks too.
+	 */
+	public function tearDown() {
+		parent::tearDown();
 	}
 
 	/**
@@ -138,14 +153,6 @@ class ViewTestCase extends TestCase {
 		}
 
 		return $post;
-	}
-
-	/**
-	 * Tears down the View test context having care to reset function mocks too.
-	 */
-	public function tearDown() {
-		Test::tearDown();
-		parent::tearDown();
 	}
 
 	/**
